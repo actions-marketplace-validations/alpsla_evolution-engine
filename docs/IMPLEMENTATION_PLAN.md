@@ -451,11 +451,9 @@ From data-flow audit and lawyer review — items not yet resolved:
 
 ---
 
-### Consolidated Priority List (Feb 23, updated)
+### Consolidated Priority List (Feb 27, updated)
 
-All pending work across the plan, ordered by priority.
-
-**1703 tests passing** — all automated test coverage complete (core + integration + secondary CLI commands + 36 diagnostics tests).
+All pre-launch work complete. **1716 tests passing**, v0.3.0 on PyPI. Now in launch phase.
 
 #### Blockers (Must Complete Before Beta Launch)
 
@@ -481,12 +479,32 @@ All complete.
 | **S5** | **Google Search Console** — verify codequal.dev, submit sitemap | Low | External | **Complete** ✅ (verified + sitemap submitted) |
 | **S6** | **Deploy SEO changes** — robots.txt/sitemap.xml/meta tags live on all pages | Low | External | **Complete** ✅ |
 
-#### Nice to Have (Low Priority)
+#### Launch Phase (Current — Target Week of Mar 3)
 
-| Priority | Task | Effort | Section | Status |
-|----------|------|--------|---------|--------|
-| **N1** | **Anthropic API terms review** — confirm data processing terms for investigation/fix prompts (L6) | Low | Legal | Pending |
-| **N2** | **Blog setup** — scaffold `/blog/` with templates and canonical setup for Dev.to cross-posting | Low | Website | Pending (hold until first post ready) |
+| Priority | Task | Effort | Status |
+|----------|------|--------|--------|
+| **L1** | **Record terminal demo** — 60-90s, text overlay, no voice (VHS or asciinema) | Low | Pending |
+| **L2** | **Create accounts** (alias) — Twitter/X, Bluesky, fosstodon.org, Dev.to, IndieHackers, Product Hunt | Low | Pending |
+| **L3** | **Update README** — demo GIF, badges, quick-start | Low | Pending |
+| **L4** | **Review & personalize channel drafts** — `docs/marketing/CHANNEL_DRAFTS.md` | Low | Pending |
+| **L5** | **Day 0: Big Bang** — HN + Product Hunt + Twitter/X + Bluesky + Dev.to + IndieHackers | Medium | Pending |
+| **L6** | **Week 1: Reddit wave** — r/Python, r/devops, r/opensource, r/commandline, r/selfhosted, r/AI_Agents (1/day) | Medium | Pending |
+| **L7** | **Week 2: German + LinkedIn** — r/de_EDV, LinkedIn EN/DE, Mastodon, Heise pitch | Medium | Pending |
+| **L8** | **Week 3-4: Spanish + content** — Spanish Twitter, Platzi, The New Stack, HackerNoon, podcast pitches | Medium | Pending |
+
+**Launch content ready at:**
+- `docs/marketing/LAUNCH_TRACKER.md` — channels, timing, UTM links, status tracking
+- `docs/marketing/CHANNEL_DRAFTS.md` — ready-to-post drafts for 15+ channels
+- `docs/marketing/VIDEO_SCRIPT.md` — 7-scene terminal demo script
+
+**UTM tracking implemented:** `script.js` reads `utm_source` from URL, persists in localStorage, sends to checkout handler → Axiom + Stripe metadata.
+
+#### Nice to Have
+
+| Priority | Task | Effort | Status |
+|----------|------|--------|--------|
+| **N1** | ~~Anthropic API terms review~~ | — | **Dropped** (users bring own API key) |
+| **N2** | **Blog setup** — scaffold `/blog/` on codequal.dev | Low | Pending (hold until first post ready) |
 
 #### Post-Beta Month 2+
 
@@ -530,6 +548,10 @@ All complete.
 | Vercel Pro plan activated — $20/mo Premium (S4) | Feb 27 |
 | Google Search Console — codequal.dev verified, sitemap submitted (S5) | Feb 27 |
 | SEO fully deployed — robots.txt, sitemap.xml, meta tags, canonical URLs, hreflang live (S6) | Feb 27 |
+| Version bump to 0.3.0 — published to PyPI, CI built all wheels | Feb 27 |
+| UTM source tracking — localStorage persistence, Axiom + Stripe attribution | Feb 27 |
+| Launch content — LAUNCH_TRACKER.md, CHANNEL_DRAFTS.md (15+ channels), VIDEO_SCRIPT.md | Feb 27 |
+| N1 (Anthropic API terms) dropped — users bring own API key | Feb 27 |
 
 ---
 
