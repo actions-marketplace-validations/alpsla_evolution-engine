@@ -50,13 +50,23 @@ class handler(BaseHTTPRequestHandler):
 
         stripe.api_key = secret_key
 
+        # Read optional utm_source from request body
+        utm_source = ""
+        try:
+            content_length = int(self.headers.get("Content-Length", 0))
+            if content_length > 0:
+                body = json.loads(self.rfile.read(content_length))
+                utm_source = body.get("utm_source", "")
+        except Exception:
+            pass
+
         try:
             session = stripe.checkout.Session.create(
                 mode="subscription",
                 line_items=[{"price": price_id, "quantity": 1}],
                 success_url=f"{base_url}/success?session_id={{CHECKOUT_SESSION_ID}}",
                 cancel_url=f"{base_url}/#pricing",
-                metadata={"product": "evolution-engine-pro"},
+                metadata={"product": "evolution-engine-pro", "utm_source": utm_source},
                 allow_promotion_codes=True,
             )
 
@@ -64,6 +74,7 @@ class handler(BaseHTTPRequestHandler):
                 "type": "checkout",
                 "event": "checkout_started",
                 "country": self.headers.get("x-vercel-ip-country", ""),
+                "utm_source": utm_source,
                 "timestamp": time.time(),
             })
 

@@ -49,9 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ─── Stripe checkout ───
 function startCheckout() {
+  const utm = new URLSearchParams(window.location.search).get('utm_source') || '';
   fetch('/api/create-checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ utm_source: utm }),
   })
     .then(res => res.json())
     .then(data => {
