@@ -47,9 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// ─── UTM source persistence ───
+(function() {
+  const utm = new URLSearchParams(window.location.search).get('utm_source');
+  if (utm) localStorage.setItem('utm_source', utm);
+})();
+
 // ─── Stripe checkout ───
 function startCheckout() {
-  const utm = new URLSearchParams(window.location.search).get('utm_source') || '';
+  const utm = new URLSearchParams(window.location.search).get('utm_source')
+    || localStorage.getItem('utm_source') || '';
   fetch('/api/create-checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
