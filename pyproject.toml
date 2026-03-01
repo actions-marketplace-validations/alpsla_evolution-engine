@@ -39,12 +39,13 @@ dev = [
   "pytest-cov>=4.0",
   "python-dotenv>=0.19",
   "stripe>=7.0",
+  "build>=1.0",
 ]
 
 [project.urls]
 Homepage = "https://codequal.dev"
-Repository = "https://github.com/alpsla/evolution_monitor"
-"Bug Tracker" = "https://github.com/alpsla/evolution_monitor/issues"
+Repository = "https://github.com/alpsla/evolution-engine"
+"Bug Tracker" = "https://github.com/alpsla/evolution-engine/issues"
 
 [project.scripts]
 evo = "evolution.cli:main"
