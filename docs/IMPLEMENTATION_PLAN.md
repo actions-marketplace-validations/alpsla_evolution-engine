@@ -1,8 +1,8 @@
 # Evolution Engine — Implementation Plan
 
-> **Last updated:** February 27, 2026 | 1716 tests passing | v0.3.0 (beta) | 44 universal patterns | 7 signal families
+> **Last updated:** March 2, 2026 | 1749 tests passing | v0.3.0 (beta) | 44 universal patterns | 7 signal families | 100+ repos calibrated
 >
-> This document tracks remaining work before public beta.
+> This document tracks remaining work for launch and post-launch.
 > For completed implementation history, see `IMPLEMENTATION_PLAN_v1.md`.
 
 ---
@@ -24,7 +24,7 @@ All core engine work is done. Summary of shipped features:
 | Accept deviations — scoped (permanent, commits, dates, this-run) | ✅ | `evolution/accepted.py` |
 | Run history — snapshot, compare, clean | ✅ | `evolution/history.py` |
 | Pattern distribution — PyPI auto-fetch, KB sync, registry | ✅ | `evolution/pattern_registry.py`, `kb_sync.py` |
-| 44 universal patterns from 58+ repos (calibration v3) | ✅ | `evolution/data/universal_patterns.json` |
+| 44 universal patterns from 100+ repos (3 calibration rounds) | ✅ | `evolution/data/universal_patterns.json` |
 | License system — free/pro tiers, HMAC-signed keys, Stripe checkout | ✅ | `evolution/license.py` |
 | Cython compilation + CI wheels (Linux/macOS/Windows) | ✅ | `build_cython.py`, `.github/workflows/build-wheels.yml` |
 | Website — codequal.dev on Vercel (landing, docs, privacy, Stripe, pattern registry) | ✅ | `website/` |
@@ -344,7 +344,7 @@ See `memory/transition-2026-02-20-legal.md` for exact lawyer language and implem
 | 36.13 | **GDPR deletion runbook** — internal ops procedure | Low | No | **Complete** ✅ |
 | 36.14 | **Lawyer confirmation packet** — `codequal.dev/lawyer-review-packet-2026-02-22` | Low | No | **Complete** ✅ |
 | 38b | **Stripe live-mode testing** — repeat all flows with real Stripe dashboard | Low | Yes — required before launch payments | **Complete** ✅ |
-| 49 | **Axiom dashboard & monitors** — 10 typed telemetry helpers, enriched CLI + Vercel events, 5 dashboards, 3 alerts, 1716 tests | Medium | No — operational readiness | **Complete** ✅ |
+| 49 | **Axiom dashboard & monitors** — 10 typed telemetry helpers, enriched CLI + Vercel events, 5 dashboards, 3 alerts, 1749 tests | Medium | No — operational readiness | **Complete** ✅ |
 
 **#38b — Stripe Live-Mode Testing (after #36):**
 1. Pro purchase — complete checkout with real card, verify license key, `evo license status` shows Pro
@@ -453,7 +453,7 @@ From data-flow audit and lawyer review — items not yet resolved:
 
 ### Consolidated Priority List (Feb 27, updated)
 
-All pre-launch work complete. **1716 tests passing**, v0.3.0 on PyPI. Now in launch phase.
+All pre-launch work complete. **1749 tests passing**, v0.3.0 on PyPI. Now in launch phase.
 
 #### Blockers (Must Complete Before Beta Launch)
 
@@ -483,19 +483,37 @@ All complete.
 
 | Priority | Task | Effort | Status |
 |----------|------|--------|--------|
-| **L1** | **Record terminal demo** — 60-90s, text overlay, no voice (VHS or asciinema) | Low | Pending |
+| **L1** | **Record terminal demo** — 6-scene VHS recording (install→sources→analyze→prompt→verify→closing) | Low | **Complete** ✅ |
 | **L2** | **Create accounts** (alias) — Twitter/X, Bluesky, fosstodon.org, Dev.to, IndieHackers, Product Hunt | Low | Pending |
-| **L3** | **Update README** — demo GIF, badges, quick-start | Low | Pending |
-| **L4** | **Review & personalize channel drafts** — `docs/marketing/CHANNEL_DRAFTS.md` | Low | Pending |
+| **L3** | **Update README + website** — demo GIF/video, sample reports, fix `evo investigate` → `--show-prompt` flow | Low | **Complete** ✅ |
+| **L4** | **Review & personalize channel drafts** — `docs/marketing/CHANNEL_DRAFTS.md` | Low | **Complete** ✅ |
 | **L5** | **Day 0: Big Bang** — HN + Product Hunt + Twitter/X + Bluesky + Dev.to + IndieHackers | Medium | Pending |
 | **L6** | **Week 1: Reddit wave** — r/Python, r/devops, r/opensource, r/commandline, r/selfhosted, r/AI_Agents (1/day) | Medium | Pending |
 | **L7** | **Week 2: German + LinkedIn** — r/de_EDV, LinkedIn EN/DE, Mastodon, Heise pitch | Medium | Pending |
 | **L8** | **Week 3-4: Spanish + content** — Spanish Twitter, Platzi, The New Stack, HackerNoon, podcast pitches | Medium | Pending |
 
+**L4 review notes (Mar 1):** Fixed 3 issues across all 15+ channel drafts:
+1. Repo count: "48 repos" → "100+ repos across 3 calibration rounds" (was undercounting v1+v2+v3)
+2. Investigation flow: removed `evo investigate .` as main path; replaced with actual UX (HTML report → copy prompt → paste into user's AI tool)
+3. Added detect→fix→verify loop messaging to every channel — EE is not just a detector, it proposes a complete fix process
+4. Fixed stale stats: 1716→1749 tests, confirmed v0.3.0
+
+**L1 — Demo Recording (Complete, Mar 2):**
+- 6-scene VHS tape: install → sources → analyze → show-prompt → verify → closing
+- Assets: `docs/images/demo.gif` (README), `website/assets/demo.mp4` (website)
+- VHS tape: `scripts/demo.tape` (reproducible recording)
+
+**L3 — README + Website (Complete, Mar 2):**
+- README: demo GIF at top, sample report screenshots, updated detect→fix→verify loop
+- Website: demo video replaces static terminal mockup, "Sample Reports" section with live HTML report links
+- CLI: `evo investigate .` removed from all user-facing output → replaced with `evo analyze . --show-prompt` + "Paste into Claude Code, Cursor, or Copilot"
+- Fixed `evo investigate` references in README, website step 3, CLI footer, i18n
+
 **Launch content ready at:**
 - `docs/marketing/LAUNCH_TRACKER.md` — channels, timing, UTM links, status tracking
-- `docs/marketing/CHANNEL_DRAFTS.md` — ready-to-post drafts for 15+ channels
+- `docs/marketing/CHANNEL_DRAFTS.md` — ready-to-post drafts for 15+ channels (reviewed ✅)
 - `docs/marketing/VIDEO_SCRIPT.md` — 7-scene terminal demo script
+- `website/sample-report.html` + `sample-report-verify.html` — live sample reports on codequal.dev
 
 **UTM tracking implemented:** `script.js` reads `utm_source` from URL, persists in localStorage, sends to checkout handler → Axiom + Stripe metadata.
 
@@ -552,6 +570,9 @@ All complete.
 | UTM source tracking — localStorage persistence, Axiom + Stripe attribution | Feb 27 |
 | Launch content — LAUNCH_TRACKER.md, CHANNEL_DRAFTS.md (15+ channels), VIDEO_SCRIPT.md | Feb 27 |
 | N1 (Anthropic API terms) dropped — users bring own API key | Feb 27 |
+| Deep-dive audit + E2E testing — heartbeat, API auth, input sanitization, 1749 tests | Mar 1 |
+| E2E test plan — 15/16 passed, live Stripe checkout verified, `docs/E2E_TEST_PLAN.md` | Mar 1 |
+| Channel drafts review (L4) — 100+ repos, detect→fix→verify loop, investigation flow fix | Mar 1 |
 
 ---
 
