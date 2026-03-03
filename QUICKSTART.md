@@ -21,7 +21,7 @@ Path 1: CLI Explorer          Path 2: Git Hooks           Path 3: CI Integration
 
 `evo init` auto-detects whether you're on GitHub or GitLab and generates the right CI configuration.
 
-**Free tier** covers Path 1 (CLI analysis, reports, patterns, history). **Pro** unlocks Path 2 (hooks), Path 3 (CI integration), AI investigation (`evo investigate`), fix loop (`evo fix`), and inline PR review comments.
+**Free tier** covers Path 1 (CLI analysis, reports, patterns, history). **Pro** unlocks Path 2 (hooks), Path 3 (CI integration), AI fix loop (`evo fix`), and inline PR review comments.
 
 ---
 
@@ -72,12 +72,8 @@ evo analyze . --token $GITHUB_TOKEN
 evo sources --what-if datadog
 evo sources --what-if datadog --what-if pagerduty
 
-# Get the investigation prompt to paste into any AI
+# Get the investigation prompt to paste into any AI tool
 evo analyze . --show-prompt
-
-# Run AI investigation directly (requires API key, Pro)
-export ANTHROPIC_API_KEY=sk-...
-evo investigate .
 
 # Full AI fix loop -- iterates until advisory clears (Pro)
 evo fix .
@@ -292,7 +288,8 @@ Core
   evo report [path]               Generate visual HTML report
   evo sources [path]              Show detected data sources + what-if estimates
   evo status [path]               Show adapter and run info
-  evo investigate [path]          AI root cause analysis (Pro)
+  evo analyze [path] --show-prompt Copy the prompt into your AI tool
+  evo investigate [path]          AI investigation (Pro, requires API key)
   evo fix [path]                  AI fix-verify loop (Pro)
   evo fix [path] --residual       Iteration-aware prompt (current vs previous)
   evo verify <advisory>           Compare current state to a previous advisory

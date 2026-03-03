@@ -355,19 +355,19 @@ This prompt contains:
 You can feed this directly into your AI coding tool:
 
 ```bash
-# Pipe into Claude Code
-evo investigate .
-
-# Or manually: copy the investigation prompt into Cursor / Copilot chat
+# Get the investigation prompt, then paste it into your AI tool
 evo analyze . --show-prompt
+
+# Or pipe the advisory JSON into any AI tool
+evo analyze . --output json | claude "Investigate the high-risk items"
 ```
 
-### `evo investigate` — automated AI investigation
+### `evo analyze . --show-prompt` — investigation prompt for any AI tool
 
-The `evo investigate` command feeds the advisory into an AI agent and produces a structured investigation report:
+The `--show-prompt` flag prints a structured investigation prompt you can copy into any AI coding tool (Claude Code, Cursor, Copilot, etc.):
 
 ```bash
-evo investigate .
+evo analyze . --show-prompt
 ```
 
 Output:
@@ -546,8 +546,8 @@ Tier 1 sources (file-based: git, dependencies, config) are free and require no A
 **Q: Can the AI agent introduce new problems while fixing old ones?**
 That's exactly why `evo fix` re-runs the analysis after applying changes. If the fix introduces a new anomaly (e.g., fixing CI duration but spiking file dispersion), EE catches it before the PR merges. The feedback loop is self-correcting.
 
-**Q: Which AI agents work with `evo investigate`?**
-Any AI coding tool that accepts text prompts: Claude Code, Cursor, GitHub Copilot, Cody, Windsurf, or your own scripts. The investigation prompt is plain text with structured context — no vendor lock-in.
+**Q: Which AI tools work with the investigation prompt?**
+Any AI coding tool that accepts text prompts: Claude Code, Cursor, GitHub Copilot, Cody, Windsurf, or your own scripts. Run `evo analyze . --show-prompt`, copy the prompt into your AI tool, and it has all the context it needs. No vendor lock-in.
 
 **Q: Do I need an AI agent to use EE?**
 No. EE works without any AI agent. The advisory report is useful on its own for human review. The AI agent integration is an optional layer that automates the investigation and fix cycle.

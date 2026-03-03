@@ -491,7 +491,7 @@ def _format_next_steps(
         lines.append("")
     else:
         lines.append("**Option A — Investigate:**")
-        lines.append("Run `evo investigate .` locally or enable `investigate: true` in the action.")
+        lines.append("Run `evo analyze . --show-prompt` locally, then copy the prompt into your AI tool.")
         lines.append("")
 
     if ci_provider == "gitlab":
