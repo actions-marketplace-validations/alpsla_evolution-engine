@@ -36,7 +36,15 @@
     "step2_title": "Analyze",
     "step2_desc": "Run in any git repo. EE auto-detects your tools and computes signals.",
     "step3_title": "Act",
-    "step3_desc": "Read the advisory, investigate with AI, or set up the GitHub Action for continuous monitoring."
+    "step3_desc": "Copy the prompt, paste into your AI tool (Claude Code, Cursor, Copilot), fix the drift, then verify."
+  },
+  "reports": {
+    "title": "Sample Reports",
+    "subtitle": "Every analysis generates an interactive HTML report. After your AI applies a fix, run <code>evo analyze . --verify</code> to see what resolved.",
+    "analyze_btn": "Analyze Report",
+    "analyze_desc": "Drift detected — findings, patterns, AI prompt",
+    "verify_btn": "Verification Report",
+    "verify_desc": "After fix — what resolved, improved, or persists"
   },
   "signals": {
     "title": "Signal Families",

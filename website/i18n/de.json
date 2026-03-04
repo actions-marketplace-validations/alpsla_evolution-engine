@@ -36,7 +36,15 @@
     "step2_title": "Analysieren",
     "step2_desc": "In jedem Git-Repo ausführen. EE erkennt Ihre Tools automatisch und berechnet Signale.",
     "step3_title": "Handeln",
-    "step3_desc": "Lesen Sie den Bericht, untersuchen Sie mit KI, oder richten Sie die GitHub Action für kontinuierliches Monitoring ein."
+    "step3_desc": "Kopieren Sie den Prompt, fügen Sie ihn in Ihr KI-Tool ein (Claude Code, Cursor, Copilot), beheben Sie die Drift, dann verifizieren."
+  },
+  "reports": {
+    "title": "Beispielberichte",
+    "subtitle": "Jede Analyse erstellt einen interaktiven HTML-Bericht. Nachdem Ihre KI einen Fix angewendet hat, führen Sie <code>evo analyze . --verify</code> aus, um zu sehen, was behoben wurde.",
+    "analyze_btn": "Analysebericht",
+    "analyze_desc": "Drift erkannt — Befunde, Muster, KI-Prompt",
+    "verify_btn": "Verifizierungsbericht",
+    "verify_desc": "Nach dem Fix — was behoben, verbessert oder bestehen bleibt"
   },
   "signals": {
     "title": "Signalfamilien",
