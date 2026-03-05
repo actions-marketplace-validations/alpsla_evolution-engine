@@ -69,6 +69,18 @@
       }
     }
 
+    // Handle language-aware hrefs (e.g. sample-report.html → sample-report-de.html)
+    var hrefElements = document.querySelectorAll('[data-i18n-href]');
+    for (var h = 0; h < hrefElements.length; h++) {
+      var hel = hrefElements[h];
+      var baseName = hel.getAttribute('data-i18n-href');
+      if (currentLang === 'en') {
+        hel.href = baseName + '.html';
+      } else {
+        hel.href = baseName + '-' + currentLang + '.html';
+      }
+    }
+
     // Handle "Most Popular" badge on the featured pricing card (CSS ::before content)
     var popularCard = document.querySelector('[data-i18n-popular]');
     if (popularCard) {
