@@ -101,7 +101,11 @@
     { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
     { "src": "/googlee9024bf2caf1dcc2.html", "dest": "/googlee9024bf2caf1dcc2.html" },
     { "src": "/sample-report.html", "dest": "/sample-report.html" },
+    { "src": "/sample-report-de.html", "dest": "/sample-report-de.html" },
+    { "src": "/sample-report-es.html", "dest": "/sample-report-es.html" },
     { "src": "/sample-report-verify.html", "dest": "/sample-report-verify.html" },
+    { "src": "/sample-report-verify-de.html", "dest": "/sample-report-verify-de.html" },
+    { "src": "/sample-report-verify-es.html", "dest": "/sample-report-verify-es.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
