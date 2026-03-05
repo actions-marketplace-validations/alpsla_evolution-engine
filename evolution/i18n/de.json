@@ -61,7 +61,7 @@
   "changes": {
     "title": "Was hat sich in Ihrem Code geändert",
     "empty": "Keine ungewöhnlichen Änderungen erkannt.",
-    "detected": "Wir haben {n} Änderung{s} erkannt, die von den normalen Mustern Ihres Projekts abweich{s}. Jede Änderung zeigt, was typischerweise passiert im Vergleich zu dem, was diesmal beobachtet wurde.",
+    "detected": "Wir haben {n} Änderung{s} erkannt, die von den normalen Mustern Ihres Projekts abweichen. Jede Änderung zeigt, was typischerweise passiert im Vergleich zu dem, was diesmal beobachtet wurde.",
     "accepted_not_shown": "{n} akzeptierte Abweichung{s} nicht angezeigt:",
     "accepted_hint": "Diese wurden zuvor geprüft und als erwartet markiert. Verwalten mit <code>evo accept --list</code>",
     "filter_all": "Alle",

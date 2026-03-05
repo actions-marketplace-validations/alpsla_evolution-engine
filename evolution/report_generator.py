@@ -268,7 +268,7 @@ def generate_report(
     evidence = json.loads(evidence_path.read_text()) if evidence_path.exists() else {}
 
     scope = advisory.get("scope", "Unknown Repository")
-    title = title or f"Evolution Advisory \u2014 {scope}"
+    title = title or f"{t('cover.title')} \u2014 {scope}"
 
     # Auto-load verification data if not passed explicitly
     if verification is None:
