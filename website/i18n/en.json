@@ -36,11 +36,11 @@
     "step2_title": "Analyze",
     "step2_desc": "Run in any git repo. EE auto-detects your tools and computes signals.",
     "step3_title": "Act",
-    "step3_desc": "Copy the prompt, paste into your AI tool (Claude Code, Cursor, Copilot), fix the drift, then verify."
+    "step3_desc": "Get the investigation prompt, paste it into your AI tool, and course-correct."
   },
   "reports": {
     "title": "Sample Reports",
-    "subtitle": "Every analysis generates an interactive HTML report. After your AI applies a fix, run <code>evo analyze . --verify</code> to see what resolved.",
+    "subtitle": "Every analysis generates an interactive HTML report. Reports are available in English, German, and Spanish — use <code>--lang de</code> or <code>--lang es</code>. After your AI applies a fix, run <code>evo analyze . --verify</code> to see what resolved.",
     "analyze_btn": "Analyze Report",
     "analyze_desc": "Drift detected — findings, patterns, AI prompt",
     "verify_btn": "Verification Report",
@@ -370,6 +370,7 @@
     "cmd_sources_whatif": "<code>evo sources --what-if datadog</code> — Estimate impact of adding an adapter",
     "cmd_status": "<code>evo status [path]</code> — Show detected adapters and last run info",
     "cmd_report": "<code>evo report [path]</code> — Generate an HTML report",
+    "cmd_lang": "<code>evo analyze . --lang de</code> — Generate report in German, Spanish, or English (<code>de</code>, <code>es</code>, <code>en</code>)",
     "commands_investigate": "AI Investigation",
     "cmd_show_prompt": "<code>evo analyze . --show-prompt</code> — Print the investigation prompt. Copy it into your AI tool.",
     "cmd_investigate": "<code>evo investigate [path]</code> — Automated AI investigation (Pro, requires API key)",

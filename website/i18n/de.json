@@ -36,11 +36,11 @@
     "step2_title": "Analysieren",
     "step2_desc": "In jedem Git-Repo ausführen. EE erkennt Ihre Tools automatisch und berechnet Signale.",
     "step3_title": "Handeln",
-    "step3_desc": "Kopieren Sie den Prompt, fügen Sie ihn in Ihr KI-Tool ein (Claude Code, Cursor, Copilot), beheben Sie die Drift, dann verifizieren."
+    "step3_desc": "Holen Sie sich den Untersuchungs-Prompt, fügen Sie ihn in Ihr KI-Tool ein und korrigieren Sie den Kurs."
   },
   "reports": {
     "title": "Beispielberichte",
-    "subtitle": "Jede Analyse erstellt einen interaktiven HTML-Bericht. Nachdem Ihre KI einen Fix angewendet hat, führen Sie <code>evo analyze . --verify</code> aus, um zu sehen, was behoben wurde.",
+    "subtitle": "Jede Analyse erstellt einen interaktiven HTML-Bericht. Berichte sind auf Deutsch, Englisch und Spanisch verfügbar — verwenden Sie <code>--lang de</code> oder <code>--lang es</code>. Nachdem Ihre KI einen Fix angewendet hat, führen Sie <code>evo analyze . --verify</code> aus, um zu sehen, was behoben wurde.",
     "analyze_btn": "Analysebericht",
     "analyze_desc": "Drift erkannt — Befunde, Muster, KI-Prompt",
     "verify_btn": "Verifizierungsbericht",
@@ -261,6 +261,7 @@
     "cmd_sources_whatif": "<code>evo sources --what-if datadog</code> — Auswirkung eines neuen Adapters abschätzen",
     "cmd_status": "<code>evo status [path]</code> — Erkannte Adapter und letzte Ausführung anzeigen",
     "cmd_report": "<code>evo report [path]</code> — HTML-Bericht generieren",
+    "cmd_lang": "<code>evo analyze . --lang de</code> — Bericht auf Deutsch, Spanisch oder Englisch generieren (<code>de</code>, <code>es</code>, <code>en</code>)",
     "commands_investigate": "KI-Untersuchung",
     "cmd_show_prompt": "<code>evo analyze . --show-prompt</code> — Untersuchungs-Prompt ausgeben. In Ihr KI-Tool einfügen.",
     "cmd_investigate": "<code>evo investigate [path]</code> — Automatische KI-Untersuchung (Pro, API-Schlüssel erforderlich)",

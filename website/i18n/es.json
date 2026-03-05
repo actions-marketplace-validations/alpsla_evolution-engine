@@ -36,11 +36,11 @@
     "step2_title": "Analizar",
     "step2_desc": "Ejecuta en cualquier repo git. EE detecta automáticamente tus herramientas y calcula señales.",
     "step3_title": "Actuar",
-    "step3_desc": "Copia el prompt, pégalo en tu herramienta de IA (Claude Code, Cursor, Copilot), corrige la deriva y verifica."
+    "step3_desc": "Obtén el prompt de investigación, pégalo en tu herramienta de IA y corrige el rumbo."
   },
   "reports": {
     "title": "Informes de ejemplo",
-    "subtitle": "Cada análisis genera un informe HTML interactivo. Después de que tu IA aplique una corrección, ejecuta <code>evo analyze . --verify</code> para ver qué se resolvió.",
+    "subtitle": "Cada análisis genera un informe HTML interactivo. Los informes están disponibles en inglés, alemán y español — usa <code>--lang de</code> o <code>--lang es</code>. Después de que tu IA aplique una corrección, ejecuta <code>evo analyze . --verify</code> para ver qué se resolvió.",
     "analyze_btn": "Informe de análisis",
     "analyze_desc": "Deriva detectada — hallazgos, patrones, prompt de IA",
     "verify_btn": "Informe de verificación",
@@ -261,6 +261,7 @@
     "cmd_sources_whatif": "<code>evo sources --what-if datadog</code> — Estimar el impacto de añadir un adaptador",
     "cmd_status": "<code>evo status [path]</code> — Mostrar adaptadores detectados e info de la última ejecución",
     "cmd_report": "<code>evo report [path]</code> — Generar un informe HTML",
+    "cmd_lang": "<code>evo analyze . --lang de</code> — Generar informe en alemán, español o inglés (<code>de</code>, <code>es</code>, <code>en</code>)",
     "commands_investigate": "Investigación con IA",
     "cmd_show_prompt": "<code>evo analyze . --show-prompt</code> — Imprimir el prompt de investigación. Copiarlo en tu herramienta de IA.",
     "cmd_investigate": "<code>evo investigate [path]</code> — Investigación automática con IA (Pro, requiere clave API)",
