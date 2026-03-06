@@ -232,9 +232,16 @@ evo init . --path action</code></pre>
   </ul>
 
   <h3 data-i18n="docs_page.commands_investigate">AI Investigation</h3>
+  <p data-i18n="docs_page.investigate_intro">EE doesn't call AI directly — you use your own AI tool. When EE discovers a new pattern or flags a deviation, use this 3-step flow to investigate and enrich the findings:</p>
+  <ol>
+    <li data-i18n="docs_page.investigate_step1"><strong>Get the prompt:</strong> <code>evo analyze . --show-prompt</code> — Copy the investigation prompt into ChatGPT, Claude, Cursor, or Copilot.</li>
+    <li data-i18n="docs_page.investigate_step2"><strong>Save your AI's response</strong> to a file (e.g. <code>response.txt</code>). Make sure it includes the Finding Summaries section at the end.</li>
+    <li data-i18n="docs_page.investigate_step3"><strong>Feed it back:</strong> <code>evo enrich . --from response.txt</code> — EE stores friendly descriptions on the findings. Future reports and shared patterns use the enriched text.</li>
+  </ol>
+  <p data-i18n="docs_page.investigate_also">You can also copy per-finding prompts directly from the HTML report's "Fix with AI" button.</p>
   <ul>
-    <li data-i18n="docs_page.cmd_show_prompt"><code>evo analyze . --show-prompt</code> — Print the investigation prompt. Copy it into your AI tool (ChatGPT, Claude, Cursor, Copilot).</li>
-    <li data-i18n="docs_page.cmd_enrich"><code>evo enrich . --from response.txt</code> — Import your AI's response back into EE for friendly descriptions in reports</li>
+    <li data-i18n="docs_page.cmd_show_prompt"><code>evo analyze . --show-prompt</code> — Print the full investigation prompt</li>
+    <li data-i18n="docs_page.cmd_enrich"><code>evo enrich . --from response.txt</code> — Import your AI's response for friendly descriptions in reports</li>
     <li data-i18n="docs_page.cmd_fix_dry"><code>evo fix . --dry-run</code> — Preview the fix prompt without modifying files</li>
   </ul>
 
