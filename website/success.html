@@ -129,16 +129,17 @@
     // Poll for license key (webhook may take a few seconds)
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get('session_id');
+    const nonce = params.get('nonce');
     let attempts = 0;
     const maxAttempts = 20;
 
     function pollLicense() {
-      if (!sessionId) {
+      if (!sessionId || !nonce) {
         document.getElementById('license-key').textContent = 'Error: No session ID found.';
         return;
       }
 
-      fetch('/api/get-license?session_id=' + encodeURIComponent(sessionId))
+      fetch('/api/get-license?session_id=' + encodeURIComponent(sessionId) + '&nonce=' + encodeURIComponent(nonce))
         .then(res => res.json())
         .then(data => {
           if (data.license_key) {

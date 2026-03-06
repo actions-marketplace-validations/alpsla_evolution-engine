@@ -52,6 +52,8 @@ def _make_no_events_result():
 def _patch_analyze_side_effects(monkeypatch, tmp_path):
     """Autouse-style fixture to neutralize all side effects of the analyze command."""
     monkeypatch.setenv("EVO_CONFIG_DIR", str(tmp_path / "config"))
+    # Create .git dir so the early git-repo check passes
+    (tmp_path / ".git").mkdir(exist_ok=True)
 
     patches = [
         patch("evolution.telemetry.prompt_consent"),

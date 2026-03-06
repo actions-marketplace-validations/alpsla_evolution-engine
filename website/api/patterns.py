@@ -451,14 +451,30 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        """Serve aggregated patterns, optionally filtered by ?since=ISO8601."""
+        """Serve aggregated patterns, optionally filtered by ?since=ISO8601.
+
+        Special actions:
+          ?action=export — Return the full store blob (patterns + submitters) for backup.
+        """
         try:
+            parsed = urlparse(self.path)
+            params = parse_qs(parsed.query)
+
+            # Export: return full store for backup purposes
+            action = params.get("action", [None])[0]
+            if action == "export":
+                store = _redis_get()
+                _axiom_send({
+                    "type": "pattern_export",
+                    "pattern_count": len(store.get("patterns", {})),
+                    "country": self.headers.get("x-vercel-ip-country", ""),
+                    "timestamp": time.time(),
+                })
+                return self._json(store)
+
             store = _redis_get()
             patterns = list(store.get("patterns", {}).values())
 
-            # Parse ?since parameter
-            parsed = urlparse(self.path)
-            params = parse_qs(parsed.query)
             since = params.get("since", [None])[0]
 
             if since:
@@ -558,6 +574,17 @@ class handler(BaseHTTPRequestHandler):
         # Merge into store with optimistic concurrency (CAS retry)
         _MAX_CAS_RETRIES = 3
         store = _redis_get()
+
+        # Safety check: warn if store is empty but this isn't a first-time push
+        existing_count = len(store.get("patterns", {}))
+        if existing_count == 0 and len(validated) > 0:
+            _axiom_send({
+                "type": "pattern_push_empty_store_warning",
+                "incoming_count": len(validated),
+                "instance_id": instance_id,
+                "country": self.headers.get("x-vercel-ip-country", ""),
+                "timestamp": time.time(),
+            })
         for _attempt in range(_MAX_CAS_RETRIES):
             version = store.get("_v", 0)
             for p in validated:

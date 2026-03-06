@@ -74,8 +74,11 @@ class handler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         params = parse_qs(parsed.query)
         session_id = params.get("session_id", [None])[0]
+        nonce = params.get("nonce", [None])[0]
         if not session_id:
             return self._json({"error": "Missing session_id"}, 400)
+        if not nonce:
+            return self._json({"error": "Missing nonce"}, 400)
 
         # Basic session_id format validation (Stripe IDs start with cs_)
         if not session_id.startswith("cs_") or len(session_id) > 200:
@@ -83,6 +86,17 @@ class handler(BaseHTTPRequestHandler):
 
         try:
             session = stripe.checkout.Session.retrieve(session_id)
+
+            # Verify retrieval nonce matches what was set during checkout
+            expected_nonce = session.get("metadata", {}).get("retrieval_nonce", "")
+            if not expected_nonce or nonce != expected_nonce:
+                return self._json({"error": "Invalid nonce"}, 403)
+
+            # Time-based guard: only allow retrieval within 1 hour of session creation
+            session_created = session.get("created", 0)
+            if time.time() - session_created > 3600:
+                return self._json({"error": "Session expired. Use 'evo license activate' with the key from your confirmation email."}, 403)
+
             customer_id = session.get("customer")
             if not customer_id:
                 return self._json({"license_key": None})

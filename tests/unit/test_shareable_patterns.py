@@ -169,6 +169,11 @@ class TestSharePromptConfig:
 class TestSharePromptCLI:
     """Test the post-analyze sharing prompt in the CLI."""
 
+    @pytest.fixture(autouse=True)
+    def _ensure_git_dir(self, tmp_path):
+        """Create .git dir so early git-repo check passes."""
+        (tmp_path / ".git").mkdir(exist_ok=True)
+
     def test_prompt_shown_when_shareable_patterns(self, tmp_path, monkeypatch):
         """Sharing prompt appears when shareable_patterns > 0 and not yet prompted."""
         from click.testing import CliRunner
@@ -201,6 +206,7 @@ class TestSharePromptCLI:
 
         mock_cfg = MagicMock()
         mock_cfg.get.side_effect = lambda key, default=None: {
+            "telemetry.prompted": True,  # Not first run (avoids first-run skip)
             "sync.share_prompted": False,
             "sync.privacy_level": 0,
         }.get(key, default)

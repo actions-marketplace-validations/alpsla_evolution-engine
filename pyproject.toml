@@ -32,14 +32,17 @@ dependencies = [
 
 [project.optional-dependencies]
 llm = [
-  "requests>=2.25",
+  "requests>=2.25,<3",
+]
+demo = [
+  "playwright>=1.40,<3",
 ]
 dev = [
-  "pytest>=7.0",
-  "pytest-cov>=4.0",
-  "python-dotenv>=0.19",
-  "stripe>=7.0",
-  "build>=1.0",
+  "pytest>=7.0,<9",
+  "pytest-cov>=4.0,<6",
+  "python-dotenv>=0.19,<2",
+  "stripe>=7.0,<12",
+  "build>=1.0,<2",
 ]
 
 [project.urls]
