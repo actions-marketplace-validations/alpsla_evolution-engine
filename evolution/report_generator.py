@@ -782,9 +782,12 @@ def _build_change_card(c, index=0, remote_url="", commits_by_sha=None,
     normal_w, current_w = _bar_widths(current, median)
 
     insight_dir = "up" if dev >= 0 else "down"
+    friendly = c.get("description_friendly")
     insight = metric_insight(metric_key, insight_dir)
     explanation = f"<strong>{t('card.what_this_means')}</strong> "
-    if insight:
+    if friendly:
+        explanation += _esc(friendly)
+    elif insight:
         explanation += insight
     else:
         explanation += t("card.was_compared", metric=_esc(metric_name), value=_fmt_num(current), median=_fmt_num(median))
@@ -1001,7 +1004,7 @@ def _build_pattern_card(p, badge_label):
     """Build a single pattern card with severity badge, impact, and recommendation."""
     sources = ", ".join(_family_label(s) for s in p.get("sources", []))
     metrics = ", ".join(_metric_label(m) for m in p.get("metrics", []))
-    desc = friendly_pattern(p)
+    desc = p.get("description_semantic") or friendly_pattern(p)
     risk = pattern_risk_assessment(p)
     severity = risk["severity"]
     sev_display = risk["severity_display"]
@@ -1051,7 +1054,7 @@ def _build_grouped_pattern_card(patterns, badge_label):
             label = _metric_label(m)
             if label not in all_metrics:
                 all_metrics.append(label)
-        desc = friendly_pattern(p)
+        desc = p.get("description_semantic") or friendly_pattern(p)
         if desc:
             descriptions.append(desc)
 
@@ -1832,7 +1835,7 @@ def _build_prompt(scope, period_from, period_to, changes, commits, files,
                 # Deduplicate descriptions within group
                 seen_descs = []
                 for p in group:
-                    desc = friendly_pattern(p)
+                    desc = p.get("description_semantic") or friendly_pattern(p)
                     if desc and desc not in seen_descs:
                         seen_descs.append(desc)
                 if len(seen_descs) == 1:

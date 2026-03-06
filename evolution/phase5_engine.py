@@ -775,6 +775,12 @@ class Phase5Engine:
             "1. Which commit(s) introduced the pattern shift?\n"
             "2. Was this change intentional (new feature, refactor) or unintentional (AI drift, accidental complexity)?\n"
             "3. If unintentional, what is the minimal course correction?\n"
+            "\n"
+            "After your analysis, include a FINDING SUMMARIES section with one plain-English\n"
+            "sentence per finding (for a non-technical reader):\n"
+            "\n"
+            "## Finding Summaries\n"
+            "- [family/metric]: One sentence explaining what happened and why it matters.\n"
         )
 
         return prompt

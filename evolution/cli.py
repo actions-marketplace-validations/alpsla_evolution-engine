@@ -18,6 +18,8 @@ Usage:
     evo fix [path]                   # AI fix loop (iterate until EE confirms clear)
     evo fix . --dry-run              # Preview fix prompt without modifying files
     evo fix . --dry-run --residual   # Iteration-aware prompt (current vs previous)
+    evo enrich [path]                # Import AI response to enrich descriptions
+    evo enrich . --from response.txt # From file
     evo status [path]                # Show detected adapters and last run info
     evo report [path]                # Generate HTML report
     evo patterns list                # Show KB contents
@@ -150,6 +152,16 @@ def main():
 @click.option("--lang", type=click.Choice(["en", "de", "es"]), default=None, help="Report language (default: auto-detect)")
 def analyze(path, token, families, evo_dir, json_output, llm, scope, quiet, verbose, show_prompt, no_report, open_browser, verify, lang):
     """Analyze a repository. Detects adapters automatically."""
+    # Early check: is this a git repository?
+    abs_path = os.path.abspath(path)
+    if not os.path.isdir(os.path.join(abs_path, ".git")):
+        # Also check if we're inside a git worktree (has .git file, not dir)
+        git_path = os.path.join(abs_path, ".git")
+        if not os.path.exists(git_path):
+            click.echo(f"Error: {abs_path} is not a git repository", err=True)
+            click.echo("Run this command from inside a git repository, or run 'git init' first.", err=True)
+            sys.exit(1)
+
     from evolution.orchestrator import Orchestrator
 
     tokens = {}
@@ -175,15 +187,13 @@ def analyze(path, token, families, evo_dir, json_output, llm, scope, quiet, verb
         )
     except Exception as e:
         if "InvalidGitRepository" in type(e).__name__:
-            click.echo(f"Error: {os.path.abspath(path)} is not a git repository", err=True)
+            click.echo(f"Error: {abs_path} is not a git repository", err=True)
             sys.exit(1)
         raise
 
-    # Telemetry: prompt on first analyze, track completion
-    from evolution.telemetry import prompt_consent
+    # Detect first run (telemetry not yet prompted)
     from evolution.config import EvoConfig as _EvoConfig
     _first_run = not _EvoConfig().get("telemetry.prompted", False)
-    prompt_consent()
 
     if json_output:
         click.echo(json.dumps(result, indent=2))
@@ -323,6 +333,11 @@ def analyze(path, token, families, evo_dir, json_output, llm, scope, quiet, verb
                 click.echo(display)
         except Exception:
             pass  # Never let notifications break analyze
+
+    # Telemetry consent (one-time, after analysis output so user sees results first)
+    if _first_run and not json_output and not quiet:
+        from evolution.telemetry import prompt_consent
+        prompt_consent()
 
     # Post-analyze sharing prompt (one-time, TTY only, skip on first run)
     if (result["status"] == "complete"
@@ -806,6 +821,111 @@ def fix(path, evo_dir, dry_run, max_iterations, branch, agent_type, scope, yes, 
     with open(output_dir / "fix_result.json", "w") as f:
         json.dump(result.to_dict(), f, indent=2)
     click.echo(f"\nFull results saved to: {output_dir / 'fix_result.json'}")
+
+
+# ─────────────────── evo enrich ───────────────────
+
+
+@main.command()
+@click.argument("path", default=".", type=click.Path(exists=True))
+@click.option("--from", "from_file", type=click.Path(exists=True),
+              help="File containing AI investigation response")
+@click.option("--evo-dir", help="Override .evo directory path")
+def enrich(path, from_file, evo_dir):
+    """Import AI investigation results to enrich pattern descriptions.
+
+    Reads an AI investigation response (from --show-prompt output pasted
+    into your AI tool), extracts per-finding summaries, and stores them
+    as friendly descriptions on the advisory and in the knowledge base.
+
+    Examples:
+        evo enrich . --from response.txt
+        cat response.txt | evo enrich .
+    """
+    evo_path = Path(evo_dir) if evo_dir else Path(path) / ".evo"
+    advisory_path = evo_path / "phase5" / "advisory.json"
+
+    if not advisory_path.exists():
+        click.echo("No advisory found. Run `evo analyze` first.")
+        sys.exit(1)
+
+    # Read AI response from file or stdin
+    if from_file:
+        text = Path(from_file).read_text(encoding="utf-8")
+    elif not sys.stdin.isatty():
+        text = sys.stdin.read()
+    else:
+        click.echo("Provide AI response via --from <file> or stdin.")
+        click.echo("  evo enrich . --from response.txt")
+        click.echo("  cat response.txt | evo enrich .")
+        sys.exit(1)
+
+    if not text.strip():
+        click.echo("Empty input — nothing to enrich.")
+        sys.exit(1)
+
+    from evolution.investigator import Investigator
+
+    summaries = Investigator.extract_finding_summaries(text)
+    if not summaries:
+        click.echo("No Finding Summaries section found in the input.")
+        click.echo("Make sure your AI's response includes a section like:")
+        click.echo("  ## Finding Summaries")
+        click.echo("  - [family/metric]: Plain-English description")
+        sys.exit(1)
+
+    # 1. Enrich advisory.json
+    advisory = json.loads(advisory_path.read_text())
+    enriched_count = 0
+    for change in advisory.get("changes", []):
+        key = f"{change['family']}/{change['metric']}"
+        if key in summaries:
+            change["description_friendly"] = summaries[key]
+            enriched_count += 1
+
+    advisory_path.write_text(json.dumps(advisory, indent=2))
+
+    # 2. Update matching patterns in knowledge store
+    kb_updated = 0
+    try:
+        from evolution.knowledge_store import KnowledgeStore
+        kb_path = evo_path / "knowledge.db"
+        if kb_path.exists():
+            ks = KnowledgeStore(str(kb_path))
+            for pattern in ks.list_patterns():
+                sources = pattern.get("sources", [])
+                metrics = pattern.get("metrics", [])
+                # Match pattern to summaries by source/metric pairs
+                for src in sources:
+                    for met in metrics:
+                        key = f"{src}/{met}"
+                        if key in summaries and not pattern.get("description_semantic"):
+                            ks.update_pattern(pattern["pattern_id"], {
+                                "description_semantic": summaries[key],
+                            })
+                            kb_updated += 1
+    except Exception:
+        pass  # KB update is best-effort
+
+    # 3. Regenerate HTML report
+    report_regenerated = False
+    try:
+        from evolution.report_generator import generate_report
+        html = generate_report(evo_path)
+        report_path = evo_path / "report.html"
+        report_path.write_text(html)
+        report_regenerated = True
+    except Exception:
+        pass  # Report regeneration is best-effort
+
+    click.echo(f"Enriched {enriched_count} finding(s) with friendly descriptions.")
+    if kb_updated:
+        click.echo(f"Updated {kb_updated} pattern(s) in knowledge base.")
+    if report_regenerated:
+        click.echo("HTML report regenerated.")
+
+    from evolution.telemetry import track_event
+    track_event("cli_command", {"command": "enrich", "findings_enriched": enriched_count})
 
 
 # ─────────────────── evo status ───────────────────

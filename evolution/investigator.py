@@ -17,6 +17,7 @@ CLI:
 
 import json
 import logging
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -225,6 +226,45 @@ class Investigator:
         ])
 
         return "\n".join(lines)
+
+    @staticmethod
+    def extract_finding_summaries(text: str) -> dict[str, str]:
+        """Parse the Finding Summaries section from an AI investigation response.
+
+        Looks for a section like:
+            ## Finding Summaries
+            - [ci/run_duration]: Build times increased because ...
+            - [git/files_touched]: A large refactoring commit ...
+
+        Returns:
+            Mapping of "family/metric" to friendly description string.
+            Empty dict if the section is missing or unparseable.
+        """
+        # Find the Finding Summaries section
+        match = re.search(
+            r"#+\s*Finding\s+Summaries\s*\n(.*?)(?=\n#+\s|\Z)",
+            text,
+            re.DOTALL | re.IGNORECASE,
+        )
+        if not match:
+            return {}
+
+        summaries: dict[str, str] = {}
+        section = match.group(1)
+
+        # Parse lines like: - [family/metric]: description
+        # Also support: - family/metric: description (without brackets)
+        for line_match in re.finditer(
+            r"^[-*]\s+\[?([a-z_]+/[a-z_]+)\]?\s*:[ \t]*(\S[^\n]*)",
+            section,
+            re.MULTILINE | re.IGNORECASE,
+        ):
+            key = line_match.group(1).strip().lower()
+            desc = line_match.group(2).strip()
+            if desc:
+                summaries[key] = desc
+
+        return summaries
 
     @staticmethod
     def _format_patterns(advisory: dict) -> str:
