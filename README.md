@@ -3,7 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/evolution-engine)](https://pypi.org/project/evolution-engine/)
 [![Python 3.10+](https://img.shields.io/pypi/pyversions/evolution-engine)](https://pypi.org/project/evolution-engine/)
 [![License: BSL 1.1](https://img.shields.io/badge/license-BSL%201.1-blue)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-1749%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-1770%20passing-brightgreen)]()
 
 **AI coding tools write correct code that silently breaks your architecture. Evolution Engine detects the drift, shows you the exact commit, and lets your AI fix it — with evidence.**
 
