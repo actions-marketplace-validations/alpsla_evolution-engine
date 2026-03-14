@@ -568,6 +568,7 @@ All complete.
 | **P3** | License periodic validation (weekly) | License Hardening §Phase 3 |
 | **P4** | Datadog adapter | Future |
 | **P5** | IDE extensions (VS Code, JetBrains) | Future |
+| **P6** | **Incremental analysis mode** — on repeat runs, scope to commits since last analysis (auto-detect `.evo/history/`). Add `--since` / `--commits N` CLI flags. First run = full history (best for demos/onboarding); ongoing = incremental (practical for daily/weekly monitoring). | Future |
 
 #### Completed (Since Last Update)
 
