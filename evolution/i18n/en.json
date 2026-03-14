@@ -74,7 +74,7 @@
     "what_this_means": "What this means:",
     "was_compared": "{metric} was {value}, compared to the typical value of {median}.",
     "show_technical": "Show technical details",
-    "technical_text": "The {metric} for this change was {value}. Historically, similar changes had a value of {median} ± {mad}.",
+    "technical_text": "The {metric} for this change was {value}. Historically, similar changes had a value of {median}.",
     "typical": "Typical:",
     "this_time": "This Time:",
     "above_range": "{dev}x above typical range",
@@ -115,7 +115,9 @@
     "what_are_patterns": "What are patterns?",
     "what_are_patterns_text": "Patterns are recurring correlations between different areas of your project. When a change in one area (e.g. a deployment) consistently coincides with unusual behavior in another (e.g. code dispersion), we flag it so you can decide if it needs attention.",
     "what_should_you_do": "What should you do?",
-    "what_should_you_do_text": "Focus on items marked {action_required} or {needs_attention} first. These indicate patterns that are most likely to affect code quality, stability, or security. Items marked {worth_monitoring} don't need immediate action but should be reviewed if they persist. {healthy_pattern} and {informational} confirm that things are working as expected."
+    "what_should_you_do_text": "Focus on items marked {action_required} or {needs_attention} first. These indicate patterns that are most likely to affect code quality, stability, or security. Items marked {worth_monitoring} don't need immediate action but should be reviewed if they persist. {healthy_pattern} and {informational} confirm that things are working as expected.",
+    "supporting_evidence": "Supporting Evidence",
+    "additional_insights_title": "Additional Insights"
   },
   "risk_banner": {
     "critical_title": "Immediate Review Required",

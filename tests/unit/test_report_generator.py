@@ -188,8 +188,9 @@ class TestGenerateReport:
 
     def test_contains_pattern_section(self, advisory_dir):
         html = generate_report(advisory_dir)
-        assert "Patterns" in html
-        assert "Known Pattern" in html
+        # Patterns are now inline as "Supporting Evidence" within change cards
+        assert "Supporting Evidence" in html
+        assert "Recommendation" in html
 
     def test_contains_evidence(self, advisory_dir):
         html = generate_report(advisory_dir)

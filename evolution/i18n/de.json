@@ -74,7 +74,7 @@
     "what_this_means": "Was das bedeutet:",
     "was_compared": "{metric} war {value}, verglichen mit dem typischen Wert von {median}.",
     "show_technical": "Technische Details anzeigen",
-    "technical_text": "Der Wert von {metric} für diese Änderung war {value}. Historisch hatten ähnliche Änderungen einen Wert von {median} ± {mad}.",
+    "technical_text": "Der Wert von {metric} für diese Änderung war {value}. Historisch hatten ähnliche Änderungen einen Wert von {median}.",
     "typical": "Typisch:",
     "this_time": "Diesmal:",
     "above_range": "{dev}x über dem typischen Bereich",
@@ -115,7 +115,9 @@
     "what_are_patterns": "Was sind Muster?",
     "what_are_patterns_text": "Muster sind wiederkehrende Korrelationen zwischen verschiedenen Bereichen Ihres Projekts. Wenn eine Änderung in einem Bereich (z. B. ein Deployment) konstant mit ungewöhnlichem Verhalten in einem anderen (z. B. Code-Streuung) zusammenfällt, melden wir es, damit Sie entscheiden können, ob es Aufmerksamkeit erfordert.",
     "what_should_you_do": "Was sollten Sie tun?",
-    "what_should_you_do_text": "Konzentrieren Sie sich zuerst auf Einträge mit {action_required} oder {needs_attention}. Diese weisen auf Muster hin, die am ehesten Codequalität, Stabilität oder Sicherheit beeinträchtigen. Einträge mit {worth_monitoring} erfordern kein sofortiges Handeln, sollten aber überprüft werden, wenn sie anhalten. {healthy_pattern} und {informational} bestätigen, dass alles wie erwartet funktioniert."
+    "what_should_you_do_text": "Konzentrieren Sie sich zuerst auf Einträge mit {action_required} oder {needs_attention}. Diese weisen auf Muster hin, die am ehesten Codequalität, Stabilität oder Sicherheit beeinträchtigen. Einträge mit {worth_monitoring} erfordern kein sofortiges Handeln, sollten aber überprüft werden, wenn sie anhalten. {healthy_pattern} und {informational} bestätigen, dass alles wie erwartet funktioniert.",
+    "supporting_evidence": "Unterstützende Nachweise",
+    "additional_insights_title": "Weitere Erkenntnisse"
   },
   "risk_banner": {
     "critical_title": "Sofortige Überprüfung erforderlich",

@@ -22,7 +22,7 @@ from evolution.i18n import t, load_translations, get_lang
 from evolution.phase5_engine import dedup_and_limit_patterns
 from evolution.friendly import (
     risk_level, relative_change, metric_insight, friendly_pattern,
-    pattern_risk_assessment, _severity_rank,
+    pattern_risk_assessment, _severity_rank, escalate_compound_patterns,
 )
 
 
@@ -334,8 +334,6 @@ def _render_html(advisory, evidence, title, cal=None, remote_url="",
         sha = cm.get("sha", "")
         if sha:
             commits_by_sha[sha] = cm
-    changes_html = _build_changes_section(changes, remote_url, commits_by_sha, commits, deps_changed, accepted_keys, accepted_metrics)
-
     # Filter out patterns whose metrics are all accepted
     accepted_metric_names = set(m.split("/")[-1] for m in accepted_metrics)
     def _pattern_not_accepted(p):
@@ -346,12 +344,28 @@ def _render_html(advisory, evidence, title, cal=None, remote_url="",
     n_accepted_patterns = (len(pattern_matches) - len(filtered_matches)
                            + len(candidate_patterns) - len(filtered_candidates))
 
+    # Dedup, escalate, and match patterns to changes
+    deduped_matches = dedup_and_limit_patterns(filtered_matches, limit=len(filtered_matches)) if filtered_matches else []
+    deduped_candidates = dedup_and_limit_patterns(filtered_candidates, limit=len(filtered_candidates)) if filtered_candidates else []
+    deduped_all = list(deduped_matches) + list(deduped_candidates)
+    escalate_compound_patterns(deduped_all)
+
+    matched_patterns, unmatched_patterns = _match_patterns_to_changes(changes, deduped_all)
+
+    changes_html = _build_changes_section(changes, remote_url, commits_by_sha, commits,
+                                           deps_changed, accepted_keys, accepted_metrics,
+                                           matched_patterns=matched_patterns)
+
+    # Additional insights: unmatched patterns only
+    unmatched_match_ids = set(id(p) for p in deduped_matches)
     patterns_html = _build_pattern_section(
-        filtered_matches, filtered_candidates,
+        [p for p in unmatched_patterns if id(p) in unmatched_match_ids],
+        [p for p in unmatched_patterns if id(p) not in unmatched_match_ids],
         accepted_pattern_count=n_accepted_patterns,
         accepted_metric_labels=[
             _metric_label(m) for m in sorted(accepted_metric_names)
         ],
+        section_title=t("patterns.additional_insights_title") if matched_patterns else None,
     )
     all_patterns = list(pattern_matches) + list(candidate_patterns)
     invest_html = _build_investigation_section(
@@ -611,6 +625,31 @@ def _build_verification_banner(verification):
     )
 
 
+def _match_patterns_to_changes(changes, all_patterns):
+    """Match patterns to changes by family+metric overlap.
+
+    A pattern is relevant to a change if the pattern's families contain the
+    change's family AND the pattern's metrics contain the change's metric.
+
+    Returns:
+        matched: dict mapping change index -> list of matched patterns
+        unmatched: list of patterns that didn't match any change
+    """
+    matched = {}
+    matched_ids = set()
+    for i, change in enumerate(changes):
+        c_family = change.get("family", "")
+        c_metric = change.get("metric", "")
+        for p in all_patterns:
+            p_families = set(p.get("families") or p.get("sources") or [])
+            p_metrics = set(p.get("metrics") or [])
+            if c_family in p_families and c_metric in p_metrics:
+                matched.setdefault(i, []).append(p)
+                matched_ids.add(id(p))
+    unmatched = [p for p in all_patterns if id(p) not in matched_ids]
+    return matched, unmatched
+
+
 def _build_key_findings(changes, pattern_matches, candidate_patterns, families_affected):
     """Build a concise narrative summary of all findings."""
     if not changes and not pattern_matches and not candidate_patterns:
@@ -681,7 +720,8 @@ def _build_key_findings(changes, pattern_matches, candidate_patterns, families_a
 
 def _build_changes_section(changes, remote_url="", commits_by_sha=None,
                            all_commits=None, deps_changed=None,
-                           accepted_keys=None, accepted_metrics=None):
+                           accepted_keys=None, accepted_metrics=None,
+                           matched_patterns=None):
     accepted_keys = accepted_keys or set()
     accepted_metrics = accepted_metrics or []
 
@@ -723,7 +763,8 @@ def _build_changes_section(changes, remote_url="", commits_by_sha=None,
     n = len(changes)
     cards = "\n".join(
         _build_change_card(c, idx, remote_url, commits_by_sha or {},
-                           all_commits or [], deps_changed or [], accepted_keys)
+                           all_commits or [], deps_changed or [], accepted_keys,
+                           matched_patterns=(matched_patterns or {}).get(idx, []))
         for idx, c in enumerate(changes)
     )
 
@@ -762,7 +803,7 @@ def _build_changes_section(changes, remote_url="", commits_by_sha=None,
 
 def _build_change_card(c, index=0, remote_url="", commits_by_sha=None,
                        all_commits=None, deps_changed=None,
-                       accepted_keys=None):
+                       accepted_keys=None, matched_patterns=None):
     family = c.get("family", "")
     metric_key = c.get("metric", "")
     metric_name = _metric_label(metric_key)
@@ -866,6 +907,17 @@ def _build_change_card(c, index=0, remote_url="", commits_by_sha=None,
         if len(evidence_deps) > 10:
             drift_prompt += f"  ... and {len(evidence_deps) - 10} more\\n"
 
+    # Add matched pattern context to the prompt
+    if matched_patterns:
+        drift_prompt += "\\nCORRELATED PATTERNS:\\n"
+        for p in matched_patterns:
+            p_desc = p.get("description_semantic") or friendly_pattern(p)
+            p_risk = pattern_risk_assessment(p)
+            drift_prompt += f"  [{p_risk['severity'].upper()}] {_esc(p_desc)}\\n"
+            drift_prompt += f"    → {_esc(p_risk['recommendation'])}\\n"
+            for extra in p.get("_merged_recommendations") or []:
+                drift_prompt += f"    → {_esc(extra)}\\n"
+
     if commit_sha:
         drift_prompt += (
             "\\nINVESTIGATE:\\n"
@@ -967,6 +1019,17 @@ def _build_change_card(c, index=0, remote_url="", commits_by_sha=None,
         if is_accepted else ""
     )
 
+    # Inline patterns: supporting evidence for this change
+    inline_patterns_html = ""
+    if matched_patterns:
+        pattern_items = "\n".join(_build_inline_pattern(p) for p in matched_patterns)
+        inline_patterns_html = (
+            '  <div class="inline-patterns">\n'
+            f'    <div class="inline-patterns-header">{t("patterns.supporting_evidence")}</div>\n'
+            f'    {pattern_items}\n'
+            '  </div>\n'
+        )
+
     return (
         f'<div class="change-card {dev_class}{accepted_class}" id="{anchor_id}">\n'
         '  <div class="change-card-header">\n'
@@ -993,10 +1056,40 @@ def _build_change_card(c, index=0, remote_url="", commits_by_sha=None,
         f'  <div class="deviation-badge">{t("card.above_range", dev=f"{abs_dev:.1f}") if dev >= 0 else t("card.below_range", dev=f"{abs_dev:.1f}")}</div>\n'
         f'{commit_html}'
         f'{trend_html}'
+        f'{inline_patterns_html}'
         f'{action_buttons}'
         f'{fix_prompt_html}'
         f'{tech_html}'
         '</div>'
+    )
+
+
+def _build_inline_pattern(p):
+    """Build a compact inline pattern for embedding within a change card."""
+    risk = pattern_risk_assessment(p)
+    severity = risk["severity"]
+    sev_display = risk["severity_display"]
+    recommendation = risk["recommendation"]
+    impact = risk["impact"]
+
+    # Include merged recommendations/impacts from subset elimination
+    extra_recs = p.get("_merged_recommendations") or []
+    extra_impacts = p.get("_merged_impacts") or []
+    if extra_impacts:
+        impact += " " + " ".join(extra_impacts)
+    if extra_recs:
+        recommendation += " " + " ".join(extra_recs)
+
+    desc = p.get("description_semantic") or friendly_pattern(p)
+
+    return (
+        f'<div class="inline-pattern severity-border-{severity}">\n'
+        f'  <span class="severity-badge severity-{severity}">'
+        f'{sev_display["icon"]} {_esc(sev_display["label"])}</span>\n'
+        + (f'  <p class="inline-pattern-desc">{_esc(desc)}</p>\n' if desc else '')
+        + f'  <div class="pattern-impact"><strong>{t("patterns.what_this_means")}</strong> {_esc(impact)}</div>\n'
+        f'  <div class="pattern-recommendation"><strong>{t("patterns.recommendation")}</strong> {_esc(recommendation)}</div>\n'
+        f'</div>'
     )
 
 
@@ -1013,6 +1106,16 @@ def _build_pattern_card(p, badge_label):
 
     badge_style = ' style="background: var(--color-warning);"' if badge_label == t("patterns.emerging_pattern") else ""
 
+    # Include merged recommendations/impacts from subsumed subset patterns
+    extra_impacts = p.get("_merged_impacts") or []
+    extra_recs = p.get("_merged_recommendations") or []
+    full_impact = impact
+    if extra_impacts:
+        full_impact += " " + " ".join(extra_impacts)
+    full_recommendation = recommendation
+    if extra_recs:
+        full_recommendation += " " + " ".join(extra_recs)
+
     return (
         f'<div class="pattern-card severity-border-{severity}">\n'
         f'  <span class="badge"{badge_style}>{badge_label}</span>\n'
@@ -1021,8 +1124,8 @@ def _build_pattern_card(p, badge_label):
         f'  <h3 style="margin-top: 0.5em;">{_esc(sources)}</h3>\n'
         f'  <div class="pattern-meta">{_esc(metrics)}</div>\n'
         + (f'  <p>{_esc(desc)}</p>\n' if desc else '')
-        + f'  <div class="pattern-impact"><strong>{t("patterns.what_this_means")}</strong> {_esc(impact)}</div>\n'
-        f'  <div class="pattern-recommendation"><strong>{t("patterns.recommendation")}</strong> {_esc(recommendation)}</div>\n'
+        + f'  <div class="pattern-impact"><strong>{t("patterns.what_this_means")}</strong> {_esc(full_impact)}</div>\n'
+        f'  <div class="pattern-recommendation"><strong>{t("patterns.recommendation")}</strong> {_esc(full_recommendation)}</div>\n'
         '</div>'
     )
 
@@ -1041,10 +1144,12 @@ def _build_grouped_pattern_card(patterns, badge_label):
 
     badge_style = ' style="background: var(--color-warning);"' if badge_label == t("patterns.emerging_pattern") else ""
 
-    # Collect unique sources and metrics across all patterns in the group
+    # Collect unique sources, metrics, and merged recommendations across all patterns
     all_sources = []
     all_metrics = []
     descriptions = []
+    all_impacts = {impact}
+    all_recs = {recommendation}
     for p in patterns:
         for s in p.get("sources", []):
             label = _family_label(s)
@@ -1057,9 +1162,16 @@ def _build_grouped_pattern_card(patterns, badge_label):
         desc = p.get("description_semantic") or friendly_pattern(p)
         if desc:
             descriptions.append(desc)
+        # Collect merged recommendations/impacts from subset elimination
+        for extra in p.get("_merged_impacts") or []:
+            all_impacts.add(extra)
+        for extra in p.get("_merged_recommendations") or []:
+            all_recs.add(extra)
 
     sources_str = ", ".join(all_sources)
     metrics_str = ", ".join(all_metrics)
+    full_impact = " ".join(all_impacts)
+    full_recommendation = " ".join(all_recs)
 
     # Show each pattern's description as a bullet
     desc_html = ""
@@ -1076,8 +1188,8 @@ def _build_grouped_pattern_card(patterns, badge_label):
         f'  <h3 style="margin-top: 0.5em;">{_esc(sources_str)}</h3>\n'
         f'  <div class="pattern-meta">{_esc(metrics_str)}</div>\n'
         f'{desc_html}'
-        f'  <div class="pattern-impact"><strong>{t("patterns.what_this_means")}</strong> {_esc(impact)}</div>\n'
-        f'  <div class="pattern-recommendation"><strong>{t("patterns.recommendation")}</strong> {_esc(recommendation)}</div>\n'
+        f'  <div class="pattern-impact"><strong>{t("patterns.what_this_means")}</strong> {_esc(full_impact)}</div>\n'
+        f'  <div class="pattern-recommendation"><strong>{t("patterns.recommendation")}</strong> {_esc(full_recommendation)}</div>\n'
         '</div>'
     )
 
@@ -1118,16 +1230,14 @@ def _grouped_cards(patterns, badge_label):
 
 
 def _build_pattern_section(matches, candidates, accepted_pattern_count=0,
-                           accepted_metric_labels=None):
+                           accepted_metric_labels=None, section_title=None):
     if not matches and not candidates and not accepted_pattern_count:
         return ""
 
     PATTERN_VISIBLE_LIMIT = 3
 
-    # Dedup patterns by family+metric (same logic as CLI output)
-    deduped_matches = dedup_and_limit_patterns(matches, limit=len(matches)) if matches else []
-    deduped_candidates = dedup_and_limit_patterns(candidates, limit=len(candidates)) if candidates else []
-    deduped_all = list(deduped_matches) + list(deduped_candidates)
+    # Patterns are already deduped and escalated upstream — just use as-is
+    deduped_all = list(matches or []) + list(candidates or [])
 
     # Severity counts from deduped patterns (matches what user sees in cards)
     severity_counts = {}
@@ -1139,7 +1249,7 @@ def _build_pattern_section(matches, candidates, accepted_pattern_count=0,
             highest_severity = sev
 
     # Sort all patterns by severity (most critical first), unified list
-    matches_set = set(id(p) for p in deduped_matches)
+    matches_set = set(id(p) for p in (matches or []))
     all_sorted = sorted(
         deduped_all,
         key=lambda p: _severity_rank(pattern_risk_assessment(p)["severity"]),
@@ -1208,9 +1318,10 @@ def _build_pattern_section(matches, candidates, accepted_pattern_count=0,
             f'</p>\n'
         )
 
+    title_text = section_title or t("patterns.title")
     return (
         '<section class="patterns page-break-before">\n'
-        f'  <h2>{t("patterns.title")}</h2>\n'
+        f'  <h2>{title_text}</h2>\n'
         f'  {dedup_note}'
         f'  {accepted_note}'
         f'  {banner_html}\n'
@@ -2095,6 +2206,15 @@ pre { background: var(--color-bg-subtle); padding: 1em; border-radius: 8px;
 .technical-detail summary:hover { text-decoration: underline; }
 .pattern-card { background: var(--color-bg-subtle); border: 1px solid var(--color-border);
   border-radius: 8px; padding: 1.5em; margin-bottom: 1.5em; }
+.inline-patterns { margin-top: 1em; border-top: 1px dashed var(--color-border); padding-top: 0.75em; }
+.inline-patterns-header { font-weight: 600; font-size: 9pt; color: var(--color-text-muted);
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5em; }
+.inline-pattern { background: var(--color-bg-subtle); border: 1px solid var(--color-border);
+  border-radius: 6px; padding: 0.75em 1em; margin-bottom: 0.5em; }
+.inline-pattern-desc { font-size: 10pt; margin: 0.5em 0; color: var(--color-text); }
+.inline-pattern .pattern-recommendation { font-size: 9pt; margin-top: 0.5em; }
+.inline-pattern .pattern-impact { font-size: 9pt; margin: 0.5em 0; padding: 0.75em; }
+.inline-pattern .severity-badge { font-size: 8pt; }
 .severity-badge { display: inline-block; padding: 0.25em 0.75em; border-radius: 4px;
   font-weight: 600; font-size: 9pt; margin-left: 0.5em; }
 .severity-badge.severity-critical { background: #dc2626; color: white; }

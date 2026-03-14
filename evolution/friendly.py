@@ -451,6 +451,13 @@ def pattern_risk_assessment(pattern: dict) -> dict:
             impact = "A weak but recurring correlation exists between these signals."
             recommendation = "No action needed. This is a background trend to be aware of."
 
+        # Honour compound escalation if applied by escalate_compound_patterns()
+        if "_escalated_severity" in pattern:
+            severity = pattern["_escalated_severity"]
+            escalation_note = pattern.get("_escalation_reason", "")
+            if escalation_note:
+                impact = f"{impact} {escalation_note}."
+
         return {
             "severity": severity,
             "severity_display": _SEVERITY_DISPLAY[severity],
@@ -459,6 +466,14 @@ def pattern_risk_assessment(pattern: dict) -> dict:
         }
 
     severity, impact, recommendation = best
+
+    # Honour compound escalation if applied by escalate_compound_patterns()
+    if "_escalated_severity" in pattern:
+        severity = pattern["_escalated_severity"]
+        escalation_note = pattern.get("_escalation_reason", "")
+        if escalation_note:
+            impact = f"{impact} {escalation_note}."
+
     return {
         "severity": severity,
         "severity_display": _SEVERITY_DISPLAY[severity],
@@ -470,6 +485,79 @@ def pattern_risk_assessment(pattern: dict) -> dict:
 def _severity_rank(severity: str) -> int:
     """Numeric rank for comparing severity levels."""
     return {"positive": 0, "info": 1, "watch": 2, "concern": 3, "critical": 4}.get(severity, 1)
+
+
+_ESCALATION_NEXT = {"info": "watch", "watch": "concern", "concern": "critical"}
+
+
+def escalate_compound_patterns(patterns: list[dict]) -> list[dict]:
+    """Escalate pattern severity when multiple cross-family patterns converge.
+
+    Only escalates patterns that span 2+ families (cross-family signals).
+    Escalation rules:
+      - 3+ cross-family patterns share a family pair → escalate by 1 level
+      - 5+ cross-family patterns share a family pair → escalate by 2 levels
+
+    Single-family patterns are never escalated (they lack reinforcing evidence).
+    Positive and info-level patterns are never escalated.
+
+    Mutates and returns the same list for convenience.
+    """
+    if len(patterns) < 2:
+        return patterns
+
+    # Only consider cross-family patterns at watch+ level
+    risks = [(p, pattern_risk_assessment(p)) for p in patterns]
+    cross_family = [
+        (p, r) for p, r in risks
+        if len(p.get("families") or p.get("sources") or []) >= 2
+        and _severity_rank(r["severity"]) >= _severity_rank("watch")
+    ]
+
+    if len(cross_family) < 3:
+        return patterns
+
+    # Group by sorted family pair → collect patterns
+    pair_map: dict[tuple, list[dict]] = {}
+    for p, r in cross_family:
+        families = sorted(p.get("families") or p.get("sources") or [])
+        # For patterns with 2+ families, create pairs
+        for i in range(len(families)):
+            for j in range(i + 1, len(families)):
+                pair = (families[i], families[j])
+                pair_map.setdefault(pair, []).append(p)
+
+    # Determine escalation per pattern
+    escalate_ids: dict[str, int] = {}
+    for pair, group in pair_map.items():
+        if len(group) >= 5:
+            steps = 2
+        elif len(group) >= 3:
+            steps = 1
+        else:
+            continue
+        for p in group:
+            pid = p.get("pattern_id", id(p))
+            escalate_ids[pid] = max(escalate_ids.get(pid, 0), steps)
+
+    # Apply escalation
+    for p in patterns:
+        pid = p.get("pattern_id", id(p))
+        steps = escalate_ids.get(pid, 0)
+        if steps > 0:
+            current = pattern_risk_assessment(p)["severity"]
+            new_sev = current
+            for _ in range(steps):
+                new_sev = _ESCALATION_NEXT.get(new_sev, new_sev)
+            if new_sev != current:
+                p["_escalated_severity"] = new_sev
+                p["_original_severity"] = current
+                p["_escalation_reason"] = (
+                    f"Escalated from {_SEVERITY_DISPLAY[current]['label']} — "
+                    f"multiple correlated patterns converge on the same signal families"
+                )
+
+    return patterns
 
 
 # ─── Advisory Status Rollup ───

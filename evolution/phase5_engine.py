@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Optional
 
 from evolution.constants import SIGNAL_FILES, FAMILY_LABELS, METRIC_LABELS
-from evolution.friendly import risk_level, relative_change, metric_insight, friendly_pattern, pattern_risk_assessment
+from evolution.friendly import risk_level, relative_change, metric_insight, friendly_pattern, pattern_risk_assessment, escalate_compound_patterns
 from evolution.phase4_engine import (
     Phase4Engine,
     signals_to_components,
@@ -66,6 +66,10 @@ def dedup_and_limit_patterns(patterns: list[dict], limit: int = 5) -> list[dict]
     correlation direction) and keeps the one with the highest absolute
     correlation strength from each group. Also merges conceptual inverses
     like dispersion/change_locality into a single slot.
+
+    Subset elimination: if pattern A has families=X, metrics={m1} and
+    pattern B has families=X, metrics={m1, m2}, B subsumes A — the more
+    specific pattern is kept and the subset is dropped.
     """
     # Canonical metric aliases: map inverse metrics to a single key
     _METRIC_CANONICAL = {"change_locality": "dispersion"}
@@ -85,6 +89,65 @@ def dedup_and_limit_patterns(patterns: list[dict], limit: int = 5) -> list[dict]
             seen[key].get("correlation") or seen[key].get("correlation_strength") or 0
         ):
             seen[key] = p
+
+    # Subset elimination: drop patterns whose metrics are a strict subset
+    # of another pattern with the same families.  Collect unique
+    # recommendations from subsumed patterns and merge them into the
+    # surviving superset so no actionable advice is lost.
+    keys = list(seen.keys())
+    to_remove = set()
+    # superset_key -> list of subsumed patterns (for recommendation merging)
+    subsumed_by: dict[tuple, list[dict]] = {}
+    for i, (fam_a, met_a) in enumerate(keys):
+        if (fam_a, met_a) in to_remove:
+            continue
+        met_set_a = set(met_a)
+        for j, (fam_b, met_b) in enumerate(keys):
+            if i == j or (fam_b, met_b) in to_remove:
+                continue
+            if fam_a != fam_b:
+                continue
+            met_set_b = set(met_b)
+            # If A is a strict subset of B, drop A (keep the more specific B)
+            if met_set_a < met_set_b:
+                to_remove.add((fam_a, met_a))
+                subsumed_by.setdefault((fam_b, met_b), []).append(seen[(fam_a, met_a)])
+                break
+            # If B is a strict subset of A, drop B
+            elif met_set_b < met_set_a:
+                to_remove.add((fam_b, met_b))
+                subsumed_by.setdefault((fam_a, met_a), []).append(seen[(fam_b, met_b)])
+
+    # Merge unique recommendations from subsumed patterns into survivors.
+    # Only merge from subsumed patterns whose severity is actionable
+    # (watch/concern/critical).  Skip positive/info — their advice
+    # ("no action needed") contradicts the survivor's warning.
+    from evolution.friendly import _severity_rank
+    for superset_key, subsumed_list in subsumed_by.items():
+        survivor = seen[superset_key]
+        survivor_risk = pattern_risk_assessment(survivor)
+        survivor_recs = {survivor_risk["recommendation"]}
+        survivor_impacts = {survivor_risk["impact"]}
+        extra_recs = []
+        extra_impacts = []
+        for sub_p in subsumed_list:
+            sub_risk = pattern_risk_assessment(sub_p)
+            # Skip positive/info — merging "no action needed" into a
+            # warning produces contradictory advice.
+            if _severity_rank(sub_risk["severity"]) < _severity_rank("watch"):
+                continue
+            if sub_risk["recommendation"] not in survivor_recs:
+                survivor_recs.add(sub_risk["recommendation"])
+                extra_recs.append(sub_risk["recommendation"])
+            if sub_risk["impact"] not in survivor_impacts:
+                survivor_impacts.add(sub_risk["impact"])
+                extra_impacts.append(sub_risk["impact"])
+        if extra_recs or extra_impacts:
+            survivor["_merged_recommendations"] = extra_recs
+            survivor["_merged_impacts"] = extra_impacts
+
+    for key in to_remove:
+        del seen[key]
 
     # Sort by severity (critical first), then by absolute correlation as tiebreaker
     _sev_rank = {"positive": 0, "info": 1, "watch": 2, "concern": 3, "critical": 4}
@@ -619,8 +682,13 @@ class Phase5Engine:
                 lines.append("")
 
         # Known patterns (from KB, top 5 after dedup)
-        if advisory.get("pattern_matches"):
-            shown = dedup_and_limit_patterns(advisory["pattern_matches"])
+        all_pattern_matches = list(advisory.get("pattern_matches") or [])
+        all_candidate_patterns = list(advisory.get("candidate_patterns") or [])
+        # Escalate severity when multiple patterns converge on the same family
+        escalate_compound_patterns(all_pattern_matches + all_candidate_patterns)
+
+        if all_pattern_matches:
+            shown = dedup_and_limit_patterns(all_pattern_matches)
             lines.append(f"KNOWN PATTERNS ({len(shown)})")
             lines.append("")
             for pm in shown:
@@ -629,8 +697,8 @@ class Phase5Engine:
                 lines.append("")
 
         # New patterns (discovered locally, top 5 after dedup)
-        if advisory.get("candidate_patterns"):
-            shown = dedup_and_limit_patterns(advisory["candidate_patterns"])
+        if all_candidate_patterns:
+            shown = dedup_and_limit_patterns(all_candidate_patterns)
             lines.append(f"NEW PATTERNS ({len(shown)})")
             lines.append("")
             for cp in shown:

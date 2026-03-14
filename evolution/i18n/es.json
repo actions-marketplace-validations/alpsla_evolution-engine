@@ -74,7 +74,7 @@
     "what_this_means": "Qué significa esto:",
     "was_compared": "{metric} fue {value}, comparado con el valor típico de {median}.",
     "show_technical": "Mostrar detalles técnicos",
-    "technical_text": "El {metric} para este cambio fue {value}. Históricamente, cambios similares tenían un valor de {median} ± {mad}.",
+    "technical_text": "El {metric} para este cambio fue {value}. Históricamente, cambios similares tenían un valor de {median}.",
     "typical": "Típico:",
     "this_time": "Esta vez:",
     "above_range": "{dev}x por encima del rango típico",
@@ -115,7 +115,9 @@
     "what_are_patterns": "¿Qué son los patrones?",
     "what_are_patterns_text": "Los patrones son correlaciones recurrentes entre diferentes áreas de su proyecto. Cuando un cambio en un área (ej. un despliegue) coincide consistentemente con comportamiento inusual en otra (ej. dispersión del código), lo señalamos para que pueda decidir si necesita atención.",
     "what_should_you_do": "¿Qué debería hacer?",
-    "what_should_you_do_text": "Concéntrese primero en los elementos marcados como {action_required} o {needs_attention}. Estos indican patrones que probablemente afecten la calidad, estabilidad o seguridad del código. Los elementos marcados como {worth_monitoring} no requieren acción inmediata pero deben revisarse si persisten. {healthy_pattern} e {informational} confirman que las cosas funcionan como se espera."
+    "what_should_you_do_text": "Concéntrese primero en los elementos marcados como {action_required} o {needs_attention}. Estos indican patrones que probablemente afecten la calidad, estabilidad o seguridad del código. Los elementos marcados como {worth_monitoring} no requieren acción inmediata pero deben revisarse si persisten. {healthy_pattern} e {informational} confirman que las cosas funcionan como se espera.",
+    "supporting_evidence": "Evidencia de Respaldo",
+    "additional_insights_title": "Información Adicional"
   },
   "risk_banner": {
     "critical_title": "Revisión inmediata requerida",
