@@ -106,7 +106,7 @@ _METRIC_INSIGHTS = {
     ("change_locality", "up"): "The changed files frequently change together, suggesting a focused modification.",
     ("change_locality", "down"): "The changed files don't usually change together, suggesting a cross-cutting modification.",
     ("cochange_novelty_ratio", "up"): "Many file pairings in this change haven't been seen together before.",
-    ("cochange_novelty_ratio", "down"): "This change follows well-established patterns of file co-changes.",
+    ("cochange_novelty_ratio", "down"): "Unusually low novelty — changes are more repetitive than normal, touching only well-known file combinations.",
 
     # CI metrics
     ("run_duration", "up"): "Build took longer than usual.",
@@ -336,9 +336,9 @@ _PATTERN_RISK = {
         "Investigate which files are being combined unexpectedly. Prioritize testing these changes.",
     ),
     ("cochange_novelty_ratio", "down"): (
-        "positive",
-        "Changes follow well-established file co-change patterns. The code paths being modified have been tested together before.",
-        "No action needed. This indicates stable, predictable development.",
+        "info",
+        "File co-change novelty is unusually low. While familiar patterns reduce risk, this could indicate repetitive or mechanical changes rather than normal development.",
+        "Review whether recent commits are routine maintenance or a sign of narrow, repetitive modifications that lack expected variety.",
     ),
     # Change locality
     ("change_locality", "up"): (

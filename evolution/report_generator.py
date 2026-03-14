@@ -387,7 +387,7 @@ def _render_html(advisory, evidence, title, cal=None, remote_url="",
         scope, period_from, period_to, changes, commits, files_affected, timeline,
         all_patterns,
     )
-    adapters_html = _build_adapters_section(families_affected, sources_info)
+    adapters_html = _build_adapters_section(families_affected, sources_info, is_pro=is_pro)
     return (
         f'<!DOCTYPE html>\n<html lang="{get_lang()}">\n<head>\n'
         '<meta charset="UTF-8">\n'
@@ -1791,7 +1791,7 @@ def _build_sources_section(sources_info: dict, families_affected: list,
     )
 
 
-def _build_adapters_section(active_families: list, sources_info: dict = None) -> str:
+def _build_adapters_section(active_families: list, sources_info: dict = None, is_pro: bool = False) -> str:
     """Build the 'Expand Your Coverage' section with adapter cards.
 
     Shows available adapters the user could enable and general setup guidance.
@@ -1843,7 +1843,7 @@ def _build_adapters_section(active_families: list, sources_info: dict = None) ->
             hint = f'<div class="adapter-hint">{t("sources.auto_detected")} {_integrations_link()}</div>'
         pro_badge = (
             '<div class="adapter-status-badge pro">Pro</div>'
-            if is_pro_adapter else ""
+            if is_pro_adapter and not is_pro else ""
         )
         available_cards.append(
             f'<div class="adapter-card adapter-available">'
