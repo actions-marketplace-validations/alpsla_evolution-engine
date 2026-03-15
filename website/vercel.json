@@ -110,6 +110,12 @@
     { "src": "/reports/workers-sdk", "dest": "/report-workers-sdk.html" },
     { "src": "/reports/google-cloud-python", "dest": "/report-google-cloud-python.html" },
     { "src": "/reports/vscode", "dest": "/report-vscode.html" },
+    { "src": "/reports/uber-zap", "dest": "/report-zap.html" },
+    { "src": "/reports/shopify-hydrogen", "dest": "/report-hydrogen.html" },
+    { "src": "/reports/react", "dest": "/report-react.html" },
+    { "src": "/reports/stripe-node", "dest": "/report-stripe-node.html" },
+    { "src": "/reports/langchain", "dest": "/report-langchain.html" },
+    { "src": "/reports/nextjs", "dest": "/report-nextjs.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
