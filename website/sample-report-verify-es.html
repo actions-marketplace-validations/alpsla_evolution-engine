@@ -449,7 +449,7 @@ function copyPrompt() {
   var el = document.getElementById('fullPrompt');
   if (!el) return;
   _copyText(el.textContent).then(function() {
-    _flashBtn(document.getElementById('copyBtn'), 'Copied!');
+    _flashBtn(document.getElementById('copyBtn'), '¡Copiado!');
   });
 }
 function savePromptToFile() {
@@ -467,7 +467,7 @@ function togglePrompt() {
   var b = document.getElementById('togglePromptBtn');
   if (!f || !b) return;
   f.classList.toggle('show'); b.classList.toggle('active');
-  b.textContent = f.classList.contains('show') ? 'Hide Full Prompt' : 'Show Full Prompt';
+  b.textContent = f.classList.contains('show') ? 'Ocultar prompt completo' : 'Mostrar prompt completo';
 }
 function toggleTableRows(id, btn) {
   var el = document.getElementById(id);
@@ -475,14 +475,14 @@ function toggleTableRows(id, btn) {
   el.classList.toggle('show');
   btn.classList.toggle('active');
   if (el.classList.contains('show')) {
-    btn.textContent = 'Collapse';
+    btn.textContent = 'Contraer';
   } else {
-    btn.textContent = btn.getAttribute('data-label') || 'Show all';
+    btn.textContent = btn.getAttribute('data-label') || 'Mostrar todo';
   }
 }
 function copyCommand(btn, cmd) {
   var text = cmd.replace(/&quot;/g, '"');
-  _copyText(text).then(function() { _flashBtn(btn, 'Copied!'); });
+  _copyText(text).then(function() { _flashBtn(btn, '¡Copiado!'); });
 }
 function toggleAcceptMenu(idx) {
   var menu = document.getElementById('accept-menu-' + idx);
@@ -499,7 +499,7 @@ function _markAccepted(idx) {
   if (actions) {
     var btn = actions.querySelector('.btn-accept');
     if (btn) {
-      btn.textContent = 'Accepted ✓';
+      btn.textContent = 'Aceptado ✓';
       btn.classList.add('accepted');
     }
   }
@@ -524,12 +524,12 @@ function acceptFinding(idx, scope, cmd) {
     body: JSON.stringify({index: changeIndex, scope: scope, reason: 'Expected behavior'})
   })
   .then(function(r) { return r.json(); })
-  .then(function(data) { _markAccepted(idx); _showToast('Accepted'); })
+  .then(function(data) { _markAccepted(idx); _showToast('Aceptado'); })
   .catch(function() {
     var text = cmd.replace(/&quot;/g, '"');
     _copyText(text).then(function() {
       _markAccepted(idx);
-      _showToast('Command copied — paste in terminal to accept');
+      _showToast('Comando copiado — pegue en la terminal para aceptar');
     });
   });
 }
@@ -552,8 +552,8 @@ function copyFixPrompt(idx) {
   _copyText(text).then(function() {
     var btn = el.parentElement.querySelector('.btn-copy-sm');
     if (btn) {
-      btn.textContent = 'Copied!';
-      setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+      btn.textContent = '¡Copiado!';
+      setTimeout(function() { btn.textContent = 'Copiar'; }, 2000);
     }
   });
 }
@@ -707,7 +707,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="family-label">Control de Versiones</div>
     </div>
   </div>
-  <div class="user-friendly-summary"><strong>Qué significa esto:</strong> More files changed than usual in this commit.</div>
+  <div class="user-friendly-summary"><strong>Qué significa esto:</strong> Se modificaron más archivos de lo habitual en este commit.</div>
   <div class="bar-chart">
     <div class="bar-chart-row">
       <div class="bar-label">Típico:</div>
@@ -725,16 +725,16 @@ document.addEventListener('DOMContentLoaded', function() {
   <div class="inline-patterns">
     <div class="inline-patterns-header">Evidencia de Respaldo</div>
     <div class="inline-pattern severity-border-watch">
-  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
+  <span class="severity-badge severity-watch">👁️ Vale la pena monitorear</span>
   <p class="inline-pattern-desc">When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.</p>
-  <div class="pattern-impact"><strong>Qué significa esto:</strong> Commits are touching more files than usual, increasing review burden and risk of regressions.</div>
-  <div class="pattern-recommendation"><strong>Recomendación:</strong> Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.</div>
+  <div class="pattern-impact"><strong>Qué significa esto:</strong> Los commits están modificando más archivos de lo habitual, aumentando la carga de revisión y el riesgo de regresiones.</div>
+  <div class="pattern-recommendation"><strong>Recomendación:</strong> Monitoree el tamaño de los PRs. Si esto persiste, investigue si los refactorings grandes necesitan mejor descomposición.</div>
 </div>
 <div class="inline-pattern severity-border-watch">
-  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
+  <span class="severity-badge severity-watch">👁️ Vale la pena monitorear</span>
   <p class="inline-pattern-desc">Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.</p>
-  <div class="pattern-impact"><strong>Qué significa esto:</strong> Commits are touching more files than usual, increasing review burden and risk of regressions.</div>
-  <div class="pattern-recommendation"><strong>Recomendación:</strong> Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.</div>
+  <div class="pattern-impact"><strong>Qué significa esto:</strong> Los commits están modificando más archivos de lo habitual, aumentando la carga de revisión y el riesgo de regresiones.</div>
+  <div class="pattern-recommendation"><strong>Recomendación:</strong> Monitoree el tamaño de los PRs. Si esto persiste, investigue si los refactorings grandes necesitan mejor descomposición.</div>
 </div>
   </div>
   <div class="change-actions no-print" id="actions-0">
@@ -754,7 +754,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     <pre class="fix-prompt-text" id="fix-prompt-text-0">Development pattern shift detected in Control de Versiones.\n\nSIGNAL: Archivos modificados is 2.1x above the typical baseline (observed: 8, typical: 3.00).\nTRIGGER COMMIT: a1b2c3d4 — refactor: split auth migration into focused modules\n\nRECENT COMMITS (2 total, showing top 5):\n  a1b2c3d4 — refactor: split auth migration into focused modules
 
-Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth deps (2 files)\n\nCORRELATED PATTERNS:\n  [WATCH] When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.\n    → Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.\n  [WATCH] Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.\n    → Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit a1b2c3d4 — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
+Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth deps (2 files)\n\nCORRELATED PATTERNS:\n  [WATCH] When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.\n    → Monitoree el tamaño de los PRs. Si esto persiste, investigue si los refactorings grandes necesitan mejor descomposición.\n  [WATCH] Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.\n    → Monitoree el tamaño de los PRs. Si esto persiste, investigue si los refactorings grandes necesitan mejor descomposición.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit a1b2c3d4 — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
     <div class="fix-prompt-guide">
       <strong>Usar con:</strong>
       <span>Cursor — pegar en el chat</span>
@@ -783,7 +783,7 @@ Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth dep
       <div class="family-label">CI / Compilación</div>
     </div>
   </div>
-  <div class="user-friendly-summary"><strong>Qué significa esto:</strong> Build took longer than usual.</div>
+  <div class="user-friendly-summary"><strong>Qué significa esto:</strong> La compilación tardó más de lo habitual.</div>
   <div class="bar-chart">
     <div class="bar-chart-row">
       <div class="bar-label">Típico:</div>
@@ -801,22 +801,22 @@ Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth dep
   <div class="inline-patterns">
     <div class="inline-patterns-header">Evidencia de Respaldo</div>
     <div class="inline-pattern severity-border-watch">
-  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
+  <span class="severity-badge severity-watch">👁️ Vale la pena monitorear</span>
   <p class="inline-pattern-desc">When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.</p>
-  <div class="pattern-impact"><strong>Qué significa esto:</strong> Commits are touching more files than usual, increasing review burden and risk of regressions.</div>
-  <div class="pattern-recommendation"><strong>Recomendación:</strong> Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.</div>
+  <div class="pattern-impact"><strong>Qué significa esto:</strong> Los commits están modificando más archivos de lo habitual, aumentando la carga de revisión y el riesgo de regresiones.</div>
+  <div class="pattern-recommendation"><strong>Recomendación:</strong> Monitoree el tamaño de los PRs. Si esto persiste, investigue si los refactorings grandes necesitan mejor descomposición.</div>
 </div>
 <div class="inline-pattern severity-border-watch">
-  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
-  <p class="inline-pattern-desc">Adding dependencies increases CI build time as package installation and resolution steps take longer.</p>
-  <div class="pattern-impact"><strong>Qué significa esto:</strong> The dependency count is growing, expanding the supply-chain attack surface and potential for version conflicts.</div>
-  <div class="pattern-recommendation"><strong>Recomendación:</strong> Audit new dependencies for necessity, maintenance status, and known vulnerabilities.</div>
-</div>
-<div class="inline-pattern severity-border-info">
-  <span class="severity-badge severity-info">ℹ️ Informational</span>
+  <span class="severity-badge severity-watch">👁️ Vale la pena monitorear</span>
   <p class="inline-pattern-desc">When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.</p>
-  <div class="pattern-impact"><strong>Qué significa esto:</strong> Builds are running faster than usual. Verify this isn&#x27;t due to skipped tests or simplified steps.</div>
-  <div class="pattern-recommendation"><strong>Recomendación:</strong> Confirm test coverage hasn&#x27;t decreased alongside faster builds.</div>
+  <div class="pattern-impact"><strong>Qué significa esto:</strong> Las compilaciones están tardando más. Ciclos de retroalimentación CI más lentos reducen la productividad del desarrollador y retrasan la detección de problemas.</div>
+  <div class="pattern-recommendation"><strong>Recomendación:</strong> Perfile el pipeline de compilación para identificar cuellos de botella. Verifique si se añadieron tests costosos o pasos de compilación nuevos.</div>
+</div>
+<div class="inline-pattern severity-border-watch">
+  <span class="severity-badge severity-watch">👁️ Vale la pena monitorear</span>
+  <p class="inline-pattern-desc">Adding dependencies increases CI build time as package installation and resolution steps take longer.</p>
+  <div class="pattern-impact"><strong>Qué significa esto:</strong> La cantidad de dependencias está creciendo, expandiendo la superficie de ataque de la cadena de suministro y el potencial de conflictos de versiones.</div>
+  <div class="pattern-recommendation"><strong>Recomendación:</strong> Audite las nuevas dependencias por necesidad, estado de mantenimiento y vulnerabilidades conocidas.</div>
 </div>
   </div>
   <div class="change-actions no-print" id="actions-1">
@@ -836,7 +836,7 @@ Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth dep
     </div>
     <pre class="fix-prompt-text" id="fix-prompt-text-1">Development pattern shift detected in CI / Compilación.\n\nSIGNAL: Duración de compilación is 3.9x above the typical baseline (observed: 340, typical: 165.0).\nTRIGGER COMMIT: a1b2c3d4 — refactor: split auth migration into focused modules\n\nRECENT COMMITS (2 total, showing top 5):\n  a1b2c3d4 — refactor: split auth migration into focused modules
 
-Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth deps (2 files)\n\nCORRELATED PATTERNS:\n  [WATCH] When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.\n    → Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.\n  [INFO] When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.\n    → Confirm test coverage hasn&#x27;t decreased alongside faster builds.\n  [WATCH] Adding dependencies increases CI build time as package installation and resolution steps take longer.\n    → Audit new dependencies for necessity, maintenance status, and known vulnerabilities.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit a1b2c3d4 — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
+Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth deps (2 files)\n\nCORRELATED PATTERNS:\n  [WATCH] When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.\n    → Monitoree el tamaño de los PRs. Si esto persiste, investigue si los refactorings grandes necesitan mejor descomposición.\n  [INFO] When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.\n    → Confirme que la cobertura de tests no ha disminuido junto con compilaciones más rápidas.\n  [WATCH] Adding dependencies increases CI build time as package installation and resolution steps take longer.\n    → Audite las nuevas dependencias por necesidad, estado de mantenimiento y vulnerabilidades conocidas.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit a1b2c3d4 — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
     <div class="fix-prompt-guide">
       <strong>Usar con:</strong>
       <span>Cursor — pegar en el chat</span>
@@ -865,7 +865,7 @@ Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth dep
       <div class="family-label">Dependencias</div>
     </div>
   </div>
-  <div class="user-friendly-summary"><strong>Qué significa esto:</strong> Dependency count increased.</div>
+  <div class="user-friendly-summary"><strong>Qué significa esto:</strong> La cantidad de dependencias aumentó.</div>
   <div class="bar-chart">
     <div class="bar-chart-row">
       <div class="bar-label">Típico:</div>
@@ -883,16 +883,16 @@ Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth dep
   <div class="inline-patterns">
     <div class="inline-patterns-header">Evidencia de Respaldo</div>
     <div class="inline-pattern severity-border-watch">
-  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
+  <span class="severity-badge severity-watch">👁️ Vale la pena monitorear</span>
   <p class="inline-pattern-desc">Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.</p>
-  <div class="pattern-impact"><strong>Qué significa esto:</strong> Commits are touching more files than usual, increasing review burden and risk of regressions.</div>
-  <div class="pattern-recommendation"><strong>Recomendación:</strong> Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.</div>
+  <div class="pattern-impact"><strong>Qué significa esto:</strong> Los commits están modificando más archivos de lo habitual, aumentando la carga de revisión y el riesgo de regresiones.</div>
+  <div class="pattern-recommendation"><strong>Recomendación:</strong> Monitoree el tamaño de los PRs. Si esto persiste, investigue si los refactorings grandes necesitan mejor descomposición.</div>
 </div>
 <div class="inline-pattern severity-border-watch">
-  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
+  <span class="severity-badge severity-watch">👁️ Vale la pena monitorear</span>
   <p class="inline-pattern-desc">Adding dependencies increases CI build time as package installation and resolution steps take longer.</p>
-  <div class="pattern-impact"><strong>Qué significa esto:</strong> The dependency count is growing, expanding the supply-chain attack surface and potential for version conflicts.</div>
-  <div class="pattern-recommendation"><strong>Recomendación:</strong> Audit new dependencies for necessity, maintenance status, and known vulnerabilities.</div>
+  <div class="pattern-impact"><strong>Qué significa esto:</strong> La cantidad de dependencias está creciendo, expandiendo la superficie de ataque de la cadena de suministro y el potencial de conflictos de versiones.</div>
+  <div class="pattern-recommendation"><strong>Recomendación:</strong> Audite las nuevas dependencias por necesidad, estado de mantenimiento y vulnerabilidades conocidas.</div>
 </div>
   </div>
   <div class="change-actions no-print" id="actions-2">
@@ -912,7 +912,7 @@ Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth dep
     </div>
     <pre class="fix-prompt-text" id="fix-prompt-text-2">Development pattern shift detected in Dependencias.\n\nSIGNAL: Total de dependencias is 4.0x above the typical baseline (observed: 104, typical: 86.00).\nTRIGGER COMMIT: a1b2c3d4 — refactor: split auth migration into focused modules\n\nRECENT COMMITS (2 total, showing top 5):\n  a1b2c3d4 — refactor: split auth migration into focused modules
 
-Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth deps (2 files)\n\nCORRELATED PATTERNS:\n  [WATCH] Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.\n    → Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.\n  [WATCH] Adding dependencies increases CI build time as package installation and resolution steps take longer.\n    → Audit new dependencies for necessity, maintenance status, and known vulnerabilities.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit a1b2c3d4 — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
+Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth deps (2 files)\n\nCORRELATED PATTERNS:\n  [WATCH] Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.\n    → Monitoree el tamaño de los PRs. Si esto persiste, investigue si los refactorings grandes necesitan mejor descomposición.\n  [WATCH] Adding dependencies increases CI build time as package installation and resolution steps take longer.\n    → Audite las nuevas dependencias por necesidad, estado de mantenimiento y vulnerabilidades conocidas.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit a1b2c3d4 — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
     <div class="fix-prompt-guide">
       <strong>Usar con:</strong>
       <span>Cursor — pegar en el chat</span>
@@ -939,7 +939,7 @@ Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth dep
       <div class="risk-banner risk-banner-info">
   <div class="risk-banner-title">Todo en orden</div>
   <p>Los patrones detectados son informativos o saludables. Ningún problema requiere atención en este momento.</p>
-  <div class="risk-banner-chips"><span class="severity-chip severity-info">ℹ️ 1 Informational</span></div>
+  <div class="risk-banner-chips"><span class="severity-chip severity-info">ℹ️ 1 Informativo</span></div>
 </div>
   <div class="pattern-guidance">
   <p><strong>¿Qué son los patrones?</strong> Los patrones son correlaciones recurrentes entre diferentes áreas de su proyecto. Cuando un cambio en un área (ej. un despliegue) coincide consistentemente con comportamiento inusual en otra (ej. dispersión del código), lo señalamos para que pueda decidir si necesita atención.</p>
@@ -948,12 +948,12 @@ Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth dep
 
   <div class="pattern-card severity-border-info">
   <span class="badge">Patrón conocido</span>
-  <span class="severity-badge severity-info">ℹ️ Informational</span>
+  <span class="severity-badge severity-info">ℹ️ Informativo</span>
   <h3 style="margin-top: 0.5em;">Control de Versiones, Despliegue</h3>
   <div class="pattern-meta">Dispersión de cambios, Cadencia de releases</div>
   <p>When code changes are scattered across many directories, releases tend to be pushed out faster — possibly to ship hotfixes before the next planned release.</p>
-  <div class="pattern-impact"><strong>Qué significa esto:</strong> Releases are happening more frequently. Faster releases reduce batch size risk but may skip review steps.</div>
-  <div class="pattern-recommendation"><strong>Recomendación:</strong> Verify that quality gates (testing, review) are still being applied to faster releases.</div>
+  <div class="pattern-impact"><strong>Qué significa esto:</strong> Los releases se están publicando con más frecuencia. Los releases más rápidos reducen el riesgo de lotes pero pueden omitir pasos de revisión.</div>
+  <div class="pattern-recommendation"><strong>Recomendación:</strong> Verifique que las puertas de calidad (tests, revisión) se sigan aplicando a los releases más rápidos.</div>
 </div>
 </section>
 <section class="investigation-section page-break-before">
@@ -1008,15 +1008,15 @@ DEVIATIONS FROM BASELINE:
 
 RISK PATTERNS (actionable only):
 
-- [Worth Monitoring] 2 patterns:
+- [Vale la pena monitorear] 2 patterns:
     * When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.
     * Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.
-  Impact: Commits are touching more files than usual, increasing review burden and risk of regressions.
-  Action: Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.
+  Impact: Los commits están modificando más archivos de lo habitual, aumentando la carga de revisión y el riesgo de regresiones.
+  Action: Monitoree el tamaño de los PRs. Si esto persiste, investigue si los refactorings grandes necesitan mejor descomposición.
 
-- [Worth Monitoring] Adding dependencies increases CI build time as package installation and resolution steps take longer.
-  Impact: The dependency count is growing, expanding the supply-chain attack surface and potential for version conflicts.
-  Action: Audit new dependencies for necessity, maintenance status, and known vulnerabilities.
+- [Vale la pena monitorear] Adding dependencies increases CI build time as package installation and resolution steps take longer.
+  Impact: La cantidad de dependencias está creciendo, expandiendo la superficie de ataque de la cadena de suministro y el potencial de conflictos de versiones.
+  Action: Audite las nuevas dependencias por necesidad, estado de mantenimiento y vulnerabilidades conocidas.
 
 
 COMMITS (2):

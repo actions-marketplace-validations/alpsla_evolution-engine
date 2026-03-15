@@ -808,15 +808,15 @@ Broke t (8 files)\n  b2c3d4e5 — fix: optimize CI pipeline caching for auth dep
 </div>
 <div class="inline-pattern severity-border-watch">
   <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
+  <p class="inline-pattern-desc">When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.</p>
+  <div class="pattern-impact"><strong>What this means:</strong> Builds are taking longer. Slower CI feedback loops reduce developer productivity and delay catching issues.</div>
+  <div class="pattern-recommendation"><strong>Recommendation:</strong> Profile the build pipeline to identify bottlenecks. Check for newly added expensive tests or build steps.</div>
+</div>
+<div class="inline-pattern severity-border-watch">
+  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
   <p class="inline-pattern-desc">Adding dependencies increases CI build time as package installation and resolution steps take longer.</p>
   <div class="pattern-impact"><strong>What this means:</strong> The dependency count is growing, expanding the supply-chain attack surface and potential for version conflicts.</div>
   <div class="pattern-recommendation"><strong>Recommendation:</strong> Audit new dependencies for necessity, maintenance status, and known vulnerabilities.</div>
-</div>
-<div class="inline-pattern severity-border-info">
-  <span class="severity-badge severity-info">ℹ️ Informational</span>
-  <p class="inline-pattern-desc">When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.</p>
-  <div class="pattern-impact"><strong>What this means:</strong> Builds are running faster than usual. Verify this isn&#x27;t due to skipped tests or simplified steps.</div>
-  <div class="pattern-recommendation"><strong>Recommendation:</strong> Confirm test coverage hasn&#x27;t decreased alongside faster builds.</div>
 </div>
   </div>
   <div class="change-actions no-print" id="actions-1">

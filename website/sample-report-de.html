@@ -449,7 +449,7 @@ function copyPrompt() {
   var el = document.getElementById('fullPrompt');
   if (!el) return;
   _copyText(el.textContent).then(function() {
-    _flashBtn(document.getElementById('copyBtn'), 'Copied!');
+    _flashBtn(document.getElementById('copyBtn'), 'Kopiert!');
   });
 }
 function savePromptToFile() {
@@ -467,7 +467,7 @@ function togglePrompt() {
   var b = document.getElementById('togglePromptBtn');
   if (!f || !b) return;
   f.classList.toggle('show'); b.classList.toggle('active');
-  b.textContent = f.classList.contains('show') ? 'Hide Full Prompt' : 'Show Full Prompt';
+  b.textContent = f.classList.contains('show') ? 'Vollständigen Prompt ausblenden' : 'Vollständigen Prompt anzeigen';
 }
 function toggleTableRows(id, btn) {
   var el = document.getElementById(id);
@@ -475,14 +475,14 @@ function toggleTableRows(id, btn) {
   el.classList.toggle('show');
   btn.classList.toggle('active');
   if (el.classList.contains('show')) {
-    btn.textContent = 'Collapse';
+    btn.textContent = 'Einklappen';
   } else {
-    btn.textContent = btn.getAttribute('data-label') || 'Show all';
+    btn.textContent = btn.getAttribute('data-label') || 'Alle anzeigen';
   }
 }
 function copyCommand(btn, cmd) {
   var text = cmd.replace(/&quot;/g, '"');
-  _copyText(text).then(function() { _flashBtn(btn, 'Copied!'); });
+  _copyText(text).then(function() { _flashBtn(btn, 'Kopiert!'); });
 }
 function toggleAcceptMenu(idx) {
   var menu = document.getElementById('accept-menu-' + idx);
@@ -499,7 +499,7 @@ function _markAccepted(idx) {
   if (actions) {
     var btn = actions.querySelector('.btn-accept');
     if (btn) {
-      btn.textContent = 'Accepted ✓';
+      btn.textContent = 'Akzeptiert ✓';
       btn.classList.add('accepted');
     }
   }
@@ -524,12 +524,12 @@ function acceptFinding(idx, scope, cmd) {
     body: JSON.stringify({index: changeIndex, scope: scope, reason: 'Expected behavior'})
   })
   .then(function(r) { return r.json(); })
-  .then(function(data) { _markAccepted(idx); _showToast('Accepted'); })
+  .then(function(data) { _markAccepted(idx); _showToast('Akzeptiert'); })
   .catch(function() {
     var text = cmd.replace(/&quot;/g, '"');
     _copyText(text).then(function() {
       _markAccepted(idx);
-      _showToast('Command copied — paste in terminal to accept');
+      _showToast('Befehl kopiert — im Terminal einfügen zum Akzeptieren');
     });
   });
 }
@@ -552,8 +552,8 @@ function copyFixPrompt(idx) {
   _copyText(text).then(function() {
     var btn = el.parentElement.querySelector('.btn-copy-sm');
     if (btn) {
-      btn.textContent = 'Copied!';
-      setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+      btn.textContent = 'Kopiert!';
+      setTimeout(function() { btn.textContent = 'Kopieren'; }, 2000);
     }
   });
 }
@@ -688,7 +688,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="family-label">Versionskontrolle</div>
     </div>
   </div>
-  <div class="user-friendly-summary"><strong>Was das bedeutet:</strong> More files changed than usual in this commit.</div>
+  <div class="user-friendly-summary"><strong>Was das bedeutet:</strong> Mehr Dateien als üblich wurden in diesem Commit geändert.</div>
   <div class="bar-chart">
     <div class="bar-chart-row">
       <div class="bar-label">Typisch:</div>
@@ -706,16 +706,16 @@ document.addEventListener('DOMContentLoaded', function() {
   <div class="inline-patterns">
     <div class="inline-patterns-header">Unterstützende Nachweise</div>
     <div class="inline-pattern severity-border-watch">
-  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
+  <span class="severity-badge severity-watch">👁️ Beobachtenswert</span>
   <p class="inline-pattern-desc">When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.</p>
-  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Commits are touching more files than usual, increasing review burden and risk of regressions.</div>
-  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.</div>
+  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Commits ändern mehr Dateien als üblich, was den Review-Aufwand und das Regressionsrisiko erhöht.</div>
+  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Beobachten Sie die PR-Größen. Wenn dies anhält, prüfen Sie, ob große Refactorings besser aufgeteilt werden sollten.</div>
 </div>
 <div class="inline-pattern severity-border-watch">
-  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
+  <span class="severity-badge severity-watch">👁️ Beobachtenswert</span>
   <p class="inline-pattern-desc">Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.</p>
-  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Commits are touching more files than usual, increasing review burden and risk of regressions.</div>
-  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.</div>
+  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Commits ändern mehr Dateien als üblich, was den Review-Aufwand und das Regressionsrisiko erhöht.</div>
+  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Beobachten Sie die PR-Größen. Wenn dies anhält, prüfen Sie, ob große Refactorings besser aufgeteilt werden sollten.</div>
 </div>
   </div>
   <div class="change-actions no-print" id="actions-0">
@@ -737,7 +737,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
  (11 files)\n  3b90e72f — fix: resolve N+1 query in dashboard endpoint
 
-Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bundler config (4 files)\n  113a54f2 — feat: add WebSocket support for real-time notifications (5 files)\n  4a0a9c5d — ci: add parallel test execution and coverage reporting (4 files)\n\nCORRELATED PATTERNS:\n  [WATCH] When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.\n    → Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.\n  [WATCH] Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.\n    → Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit e4f49b1a — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
+Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bundler config (4 files)\n  113a54f2 — feat: add WebSocket support for real-time notifications (5 files)\n  4a0a9c5d — ci: add parallel test execution and coverage reporting (4 files)\n\nCORRELATED PATTERNS:\n  [WATCH] When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.\n    → Beobachten Sie die PR-Größen. Wenn dies anhält, prüfen Sie, ob große Refactorings besser aufgeteilt werden sollten.\n  [WATCH] Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.\n    → Beobachten Sie die PR-Größen. Wenn dies anhält, prüfen Sie, ob große Refactorings besser aufgeteilt werden sollten.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit e4f49b1a — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
     <div class="fix-prompt-guide">
       <strong>Verwenden mit:</strong>
       <span>Cursor — im Chat einfügen</span>
@@ -766,7 +766,7 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
       <div class="family-label">Versionskontrolle</div>
     </div>
   </div>
-  <div class="user-friendly-summary"><strong>Was das bedeutet:</strong> Changes spread across unrelated areas of the codebase.</div>
+  <div class="user-friendly-summary"><strong>Was das bedeutet:</strong> Änderungen verteilen sich über nicht zusammenhängende Bereiche der Codebasis.</div>
   <div class="bar-chart">
     <div class="bar-chart-row">
       <div class="bar-label">Typisch:</div>
@@ -783,11 +783,11 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
   <div class="commit-attribution">Auslöser: <a href="https://github.com/demo-org/demo-repo/commit/e4f49b1a3c2d5e6f7a8b9c0d1e2f3a4b5c6d7e8f" target="_blank" class="commit-link"><code>e4f49b1a</code></a> feat: migrate authentication to OAuth2 + add rate limiting</div>
   <div class="inline-patterns">
     <div class="inline-patterns-header">Unterstützende Nachweise</div>
-    <div class="inline-pattern severity-border-info">
-  <span class="severity-badge severity-info">ℹ️ Informational</span>
+    <div class="inline-pattern severity-border-watch">
+  <span class="severity-badge severity-watch">👁️ Beobachtenswert</span>
   <p class="inline-pattern-desc">When code changes are scattered across many directories, releases tend to be pushed out faster — possibly to ship hotfixes before the next planned release.</p>
-  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Releases are happening more frequently. Faster releases reduce batch size risk but may skip review steps.</div>
-  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Verify that quality gates (testing, review) are still being applied to faster releases.</div>
+  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Änderungen verteilen sich über nicht zusammenhängende Teile der Codebasis. Das erschwert Reviews und erhöht das Risiko unerwarteter Nebenwirkungen.</div>
+  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Prüfen Sie aktuelle PRs auf Scope-Creep. Erwägen Sie, große Änderungen in fokussierte Commits aufzuteilen.</div>
 </div>
   </div>
   <div class="change-actions no-print" id="actions-1">
@@ -809,7 +809,7 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
 
  (11 files)\n  3b90e72f — fix: resolve N+1 query in dashboard endpoint
 
-Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bundler config (4 files)\n  113a54f2 — feat: add WebSocket support for real-time notifications (5 files)\n  4a0a9c5d — ci: add parallel test execution and coverage reporting (4 files)\n\nCORRELATED PATTERNS:\n  [INFO] When code changes are scattered across many directories, releases tend to be pushed out faster — possibly to ship hotfixes before the next planned release.\n    → Verify that quality gates (testing, review) are still being applied to faster releases.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit e4f49b1a — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
+Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bundler config (4 files)\n  113a54f2 — feat: add WebSocket support for real-time notifications (5 files)\n  4a0a9c5d — ci: add parallel test execution and coverage reporting (4 files)\n\nCORRELATED PATTERNS:\n  [INFO] When code changes are scattered across many directories, releases tend to be pushed out faster — possibly to ship hotfixes before the next planned release.\n    → Überprüfen Sie, ob Qualitätssicherungen (Tests, Review) weiterhin auf schnellere Releases angewendet werden.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit e4f49b1a — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
     <div class="fix-prompt-guide">
       <strong>Verwenden mit:</strong>
       <span>Cursor — im Chat einfügen</span>
@@ -838,7 +838,7 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
       <div class="family-label">CI / Build</div>
     </div>
   </div>
-  <div class="user-friendly-summary"><strong>Was das bedeutet:</strong> Build took longer than usual.</div>
+  <div class="user-friendly-summary"><strong>Was das bedeutet:</strong> Der Build hat länger als üblich gedauert.</div>
   <div class="bar-chart">
     <div class="bar-chart-row">
       <div class="bar-label">Typisch:</div>
@@ -856,22 +856,22 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
   <div class="inline-patterns">
     <div class="inline-patterns-header">Unterstützende Nachweise</div>
     <div class="inline-pattern severity-border-watch">
-  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
+  <span class="severity-badge severity-watch">👁️ Beobachtenswert</span>
   <p class="inline-pattern-desc">When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.</p>
-  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Commits are touching more files than usual, increasing review burden and risk of regressions.</div>
-  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.</div>
+  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Commits ändern mehr Dateien als üblich, was den Review-Aufwand und das Regressionsrisiko erhöht.</div>
+  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Beobachten Sie die PR-Größen. Wenn dies anhält, prüfen Sie, ob große Refactorings besser aufgeteilt werden sollten.</div>
 </div>
 <div class="inline-pattern severity-border-watch">
-  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
-  <p class="inline-pattern-desc">Adding dependencies increases CI build time as package installation and resolution steps take longer.</p>
-  <div class="pattern-impact"><strong>Was das bedeutet:</strong> The dependency count is growing, expanding the supply-chain attack surface and potential for version conflicts.</div>
-  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Audit new dependencies for necessity, maintenance status, and known vulnerabilities.</div>
-</div>
-<div class="inline-pattern severity-border-info">
-  <span class="severity-badge severity-info">ℹ️ Informational</span>
+  <span class="severity-badge severity-watch">👁️ Beobachtenswert</span>
   <p class="inline-pattern-desc">When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.</p>
-  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Builds are running faster than usual. Verify this isn&#x27;t due to skipped tests or simplified steps.</div>
-  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Confirm test coverage hasn&#x27;t decreased alongside faster builds.</div>
+  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Builds dauern länger. Langsamere CI-Feedbackschleifen reduzieren die Produktivität der Entwickler und verzögern das Erkennen von Problemen.</div>
+  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Profilieren Sie die Build-Pipeline, um Engpässe zu identifizieren. Prüfen Sie auf neu hinzugefügte teure Tests oder Build-Schritte.</div>
+</div>
+<div class="inline-pattern severity-border-watch">
+  <span class="severity-badge severity-watch">👁️ Beobachtenswert</span>
+  <p class="inline-pattern-desc">Adding dependencies increases CI build time as package installation and resolution steps take longer.</p>
+  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Die Anzahl der Abhängigkeiten wächst, was die Angriffsfläche in der Lieferkette und das Potenzial für Versionskonflikte vergrößert.</div>
+  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Überprüfen Sie neue Abhängigkeiten auf Notwendigkeit, Wartungsstatus und bekannte Schwachstellen.</div>
 </div>
   </div>
   <div class="change-actions no-print" id="actions-2">
@@ -893,7 +893,7 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
 
  (11 files)\n  3b90e72f — fix: resolve N+1 query in dashboard endpoint
 
-Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bundler config (4 files)\n  113a54f2 — feat: add WebSocket support for real-time notifications (5 files)\n  4a0a9c5d — ci: add parallel test execution and coverage reporting (4 files)\n\nCORRELATED PATTERNS:\n  [WATCH] When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.\n    → Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.\n  [INFO] When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.\n    → Confirm test coverage hasn&#x27;t decreased alongside faster builds.\n  [WATCH] Adding dependencies increases CI build time as package installation and resolution steps take longer.\n    → Audit new dependencies for necessity, maintenance status, and known vulnerabilities.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit e4f49b1a — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
+Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bundler config (4 files)\n  113a54f2 — feat: add WebSocket support for real-time notifications (5 files)\n  4a0a9c5d — ci: add parallel test execution and coverage reporting (4 files)\n\nCORRELATED PATTERNS:\n  [WATCH] When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.\n    → Beobachten Sie die PR-Größen. Wenn dies anhält, prüfen Sie, ob große Refactorings besser aufgeteilt werden sollten.\n  [INFO] When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.\n    → Bestätigen Sie, dass die Testabdeckung nicht zusammen mit schnelleren Builds abgenommen hat.\n  [WATCH] Adding dependencies increases CI build time as package installation and resolution steps take longer.\n    → Überprüfen Sie neue Abhängigkeiten auf Notwendigkeit, Wartungsstatus und bekannte Schwachstellen.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit e4f49b1a — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
     <div class="fix-prompt-guide">
       <strong>Verwenden mit:</strong>
       <span>Cursor — im Chat einfügen</span>
@@ -922,7 +922,7 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
       <div class="family-label">Deployment</div>
     </div>
   </div>
-  <div class="user-friendly-summary"><strong>Was das bedeutet:</strong> Shorter time between releases than usual.</div>
+  <div class="user-friendly-summary"><strong>Was das bedeutet:</strong> Kürzere Zeit zwischen Releases als üblich.</div>
   <div class="bar-chart">
     <div class="bar-chart-row">
       <div class="bar-label">Typisch:</div>
@@ -940,16 +940,16 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
   <div class="inline-patterns">
     <div class="inline-patterns-header">Unterstützende Nachweise</div>
     <div class="inline-pattern severity-border-info">
-  <span class="severity-badge severity-info">ℹ️ Informational</span>
+  <span class="severity-badge severity-info">ℹ️ Informativ</span>
   <p class="inline-pattern-desc">When code changes are scattered across many directories, releases tend to be pushed out faster — possibly to ship hotfixes before the next planned release.</p>
-  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Releases are happening more frequently. Faster releases reduce batch size risk but may skip review steps.</div>
-  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Verify that quality gates (testing, review) are still being applied to faster releases.</div>
+  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Releases werden häufiger veröffentlicht. Schnellere Releases reduzieren das Batch-Risiko, könnten aber Review-Schritte überspringen.</div>
+  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Überprüfen Sie, ob Qualitätssicherungen (Tests, Review) weiterhin auf schnellere Releases angewendet werden.</div>
 </div>
 <div class="inline-pattern severity-border-info">
-  <span class="severity-badge severity-info">ℹ️ Informational</span>
+  <span class="severity-badge severity-info">ℹ️ Informativ</span>
   <p class="inline-pattern-desc">When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.</p>
-  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Builds are running faster than usual. Verify this isn&#x27;t due to skipped tests or simplified steps.</div>
-  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Confirm test coverage hasn&#x27;t decreased alongside faster builds.</div>
+  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Builds werden schneller als üblich ausgeführt. Überprüfen Sie, ob dies nicht auf übersprungene Tests oder vereinfachte Schritte zurückzuführen ist.</div>
+  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Bestätigen Sie, dass die Testabdeckung nicht zusammen mit schnelleren Builds abgenommen hat.</div>
 </div>
   </div>
   <div class="change-actions no-print" id="actions-3">
@@ -971,7 +971,7 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
 
  (11 files)\n  3b90e72f — fix: resolve N+1 query in dashboard endpoint
 
-Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bundler config (4 files)\n  113a54f2 — feat: add WebSocket support for real-time notifications (5 files)\n  4a0a9c5d — ci: add parallel test execution and coverage reporting (4 files)\n\nCORRELATED PATTERNS:\n  [INFO] When code changes are scattered across many directories, releases tend to be pushed out faster — possibly to ship hotfixes before the next planned release.\n    → Verify that quality gates (testing, review) are still being applied to faster releases.\n  [INFO] When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.\n    → Confirm test coverage hasn&#x27;t decreased alongside faster builds.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit 113a54f2 — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
+Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bundler config (4 files)\n  113a54f2 — feat: add WebSocket support for real-time notifications (5 files)\n  4a0a9c5d — ci: add parallel test execution and coverage reporting (4 files)\n\nCORRELATED PATTERNS:\n  [INFO] When code changes are scattered across many directories, releases tend to be pushed out faster — possibly to ship hotfixes before the next planned release.\n    → Überprüfen Sie, ob Qualitätssicherungen (Tests, Review) weiterhin auf schnellere Releases angewendet werden.\n  [INFO] When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.\n    → Bestätigen Sie, dass die Testabdeckung nicht zusammen mit schnelleren Builds abgenommen hat.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit 113a54f2 — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
     <div class="fix-prompt-guide">
       <strong>Verwenden mit:</strong>
       <span>Cursor — im Chat einfügen</span>
@@ -1000,7 +1000,7 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
       <div class="family-label">Abhängigkeiten</div>
     </div>
   </div>
-  <div class="user-friendly-summary"><strong>Was das bedeutet:</strong> Dependency count increased.</div>
+  <div class="user-friendly-summary"><strong>Was das bedeutet:</strong> Die Anzahl der Abhängigkeiten ist gestiegen.</div>
   <div class="bar-chart">
     <div class="bar-chart-row">
       <div class="bar-label">Typisch:</div>
@@ -1018,16 +1018,16 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
   <div class="inline-patterns">
     <div class="inline-patterns-header">Unterstützende Nachweise</div>
     <div class="inline-pattern severity-border-watch">
-  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
+  <span class="severity-badge severity-watch">👁️ Beobachtenswert</span>
   <p class="inline-pattern-desc">Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.</p>
-  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Commits are touching more files than usual, increasing review burden and risk of regressions.</div>
-  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.</div>
+  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Commits ändern mehr Dateien als üblich, was den Review-Aufwand und das Regressionsrisiko erhöht.</div>
+  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Beobachten Sie die PR-Größen. Wenn dies anhält, prüfen Sie, ob große Refactorings besser aufgeteilt werden sollten.</div>
 </div>
 <div class="inline-pattern severity-border-watch">
-  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
+  <span class="severity-badge severity-watch">👁️ Beobachtenswert</span>
   <p class="inline-pattern-desc">Adding dependencies increases CI build time as package installation and resolution steps take longer.</p>
-  <div class="pattern-impact"><strong>Was das bedeutet:</strong> The dependency count is growing, expanding the supply-chain attack surface and potential for version conflicts.</div>
-  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Audit new dependencies for necessity, maintenance status, and known vulnerabilities.</div>
+  <div class="pattern-impact"><strong>Was das bedeutet:</strong> Die Anzahl der Abhängigkeiten wächst, was die Angriffsfläche in der Lieferkette und das Potenzial für Versionskonflikte vergrößert.</div>
+  <div class="pattern-recommendation"><strong>Empfehlung:</strong> Überprüfen Sie neue Abhängigkeiten auf Notwendigkeit, Wartungsstatus und bekannte Schwachstellen.</div>
 </div>
   </div>
   <div class="change-actions no-print" id="actions-4">
@@ -1049,7 +1049,7 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
 
  (11 files)\n  3b90e72f — fix: resolve N+1 query in dashboard endpoint
 
-Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bundler config (4 files)\n  113a54f2 — feat: add WebSocket support for real-time notifications (5 files)\n  4a0a9c5d — ci: add parallel test execution and coverage reporting (4 files)\n\nDEPENDENCIES CHANGED (3):\n  - redis\n  - authlib\n  - pyjwt: 2.6.0 -> 2.8.0\n\nCORRELATED PATTERNS:\n  [WATCH] Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.\n    → Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.\n  [WATCH] Adding dependencies increases CI build time as package installation and resolution steps take longer.\n    → Audit new dependencies for necessity, maintenance status, and known vulnerabilities.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit e4f49b1a — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
+Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bundler config (4 files)\n  113a54f2 — feat: add WebSocket support for real-time notifications (5 files)\n  4a0a9c5d — ci: add parallel test execution and coverage reporting (4 files)\n\nDEPENDENCIES CHANGED (3):\n  - redis\n  - authlib\n  - pyjwt: 2.6.0 -> 2.8.0\n\nCORRELATED PATTERNS:\n  [WATCH] Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.\n    → Beobachten Sie die PR-Größen. Wenn dies anhält, prüfen Sie, ob große Refactorings besser aufgeteilt werden sollten.\n  [WATCH] Adding dependencies increases CI build time as package installation and resolution steps take longer.\n    → Überprüfen Sie neue Abhängigkeiten auf Notwendigkeit, Wartungsstatus und bekannte Schwachstellen.\n\nINVESTIGATE:\n1. Was this change intentional or did the AI drift from goals?\n2. Review commit e4f49b1a — what specifically caused the deviation?\n3. Suggest a course correction (not a bug fix — a realignment).\n\nAFTER FIX:\nRun `evo analyze . --verify` to re-analyze and compare against this run.\nIf the change was intentional, no fix needed — accept it in the report.</pre>
     <div class="fix-prompt-guide">
       <strong>Verwenden mit:</strong>
       <span>Cursor — im Chat einfügen</span>
@@ -1128,15 +1128,15 @@ DEVIATIONS FROM BASELINE:
 
 RISK PATTERNS (actionable only):
 
-- [Worth Monitoring] 2 patterns:
+- [Beobachtenswert] 2 patterns:
     * When many files change in a single commit, CI build times increase proportionally due to broader test coverage being triggered.
     * Large commits that touch many files tend to also introduce new dependencies, suggesting feature branches that bundle dependency additions with implementation.
-  Impact: Commits are touching more files than usual, increasing review burden and risk of regressions.
-  Action: Monitor PR sizes. If this persists, investigate whether large refactors need better decomposition.
+  Impact: Commits ändern mehr Dateien als üblich, was den Review-Aufwand und das Regressionsrisiko erhöht.
+  Action: Beobachten Sie die PR-Größen. Wenn dies anhält, prüfen Sie, ob große Refactorings besser aufgeteilt werden sollten.
 
-- [Worth Monitoring] Adding dependencies increases CI build time as package installation and resolution steps take longer.
-  Impact: The dependency count is growing, expanding the supply-chain attack surface and potential for version conflicts.
-  Action: Audit new dependencies for necessity, maintenance status, and known vulnerabilities.
+- [Beobachtenswert] Adding dependencies increases CI build time as package installation and resolution steps take longer.
+  Impact: Die Anzahl der Abhängigkeiten wächst, was die Angriffsfläche in der Lieferkette und das Potenzial für Versionskonflikte vergrößert.
+  Action: Überprüfen Sie neue Abhängigkeiten auf Notwendigkeit, Wartungsstatus und bekannte Schwachstellen.
 
 
 COMMITS (5):

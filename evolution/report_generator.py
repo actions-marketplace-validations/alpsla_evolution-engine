@@ -397,7 +397,7 @@ def _render_html(advisory, evidence, title, cal=None, remote_url="",
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
         '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">\n'
         f'<style>\n{_CSS}\n</style>\n'
-        f'{_JS}\n'
+        f'{_build_js()}\n'
         '</head>\n<body>\n'
         f'{cover}\n'
         f'{exec_summary}\n'
@@ -1030,7 +1030,7 @@ def _build_change_card(c, index=0, remote_url="", commits_by_sha=None,
 
     accepted_class = " change-card-accepted" if is_accepted else ""
     accepted_badge = (
-        '    <div class="accepted-badge">\u2713 Accepted</div>\n'
+        f'    <div class="accepted-badge">{t("card.accepted")}</div>\n'
         if is_accepted else ""
     )
 
@@ -1392,8 +1392,8 @@ def _build_pattern_risk_banner(highest_severity, severity_counts, total):
     for sev in ("critical", "concern", "watch", "info", "positive"):
         count = severity_counts.get(sev, 0)
         if count > 0:
-            from evolution.friendly import _SEVERITY_DISPLAY
-            display = _SEVERITY_DISPLAY[sev]
+            from evolution.friendly import severity_display
+            display = severity_display(sev)
             chips.append(
                 f'<span class="severity-chip severity-{sev}">'
                 f'{display["icon"]} {count} {display["label"]}'
@@ -2553,12 +2553,24 @@ footer strong { color: var(--color-secondary); }
 
 # ─── JS ───
 
-_JS = """<script>
+def _build_js():
+    """Build the JS block with translated UI strings."""
+    js_copied = _esc(t("js.copied")) if t("js.copied") != "js.copied" else "Copied!"
+    js_hide_prompt = _esc(t("js.hide_full_prompt")) if t("js.hide_full_prompt") != "js.hide_full_prompt" else "Hide Full Prompt"
+    js_show_prompt = _esc(t("js.show_full_prompt")) if t("js.show_full_prompt") != "js.show_full_prompt" else "Show Full Prompt"
+    js_collapse = _esc(t("js.collapse")) if t("js.collapse") != "js.collapse" else "Collapse"
+    js_show_all = _esc(t("js.show_all")) if t("js.show_all") != "js.show_all" else "Show all"
+    js_accepted = _esc(t("card.accepted")) if t("card.accepted") != "card.accepted" else "Accepted \u2713"
+    js_accepted_toast = _esc(t("js.accepted_toast")) if t("js.accepted_toast") != "js.accepted_toast" else "Accepted"
+    js_cmd_copied = _esc(t("js.command_copied")) if t("js.command_copied") != "js.command_copied" else "Command copied \u2014 paste in terminal to accept"
+    js_copy = _esc(t("card.copy")) if t("card.copy") != "card.copy" else "Copy"
+
+    return f"""<script>
 // Clipboard helper — works on file:// URLs where navigator.clipboard is blocked
-function _copyText(text) {
-  if (navigator.clipboard && window.isSecureContext) {
+function _copyText(text) {{
+  if (navigator.clipboard && window.isSecureContext) {{
     return navigator.clipboard.writeText(text);
-  }
+  }}
   // Fallback for file:// protocol
   var ta = document.createElement('textarea');
   ta.value = text;
@@ -2566,84 +2578,84 @@ function _copyText(text) {
   ta.style.left = '-9999px';
   document.body.appendChild(ta);
   ta.select();
-  try { document.execCommand('copy'); } catch(e) {}
+  try {{ document.execCommand('copy'); }} catch(e) {{}}
   document.body.removeChild(ta);
   return Promise.resolve();
-}
-function _flashBtn(btn, label, duration) {
+}}
+function _flashBtn(btn, label, duration) {{
   var orig = btn.textContent;
   btn.textContent = label;
   btn.style.background = 'var(--color-success)';
   btn.style.color = 'white';
   btn.style.borderColor = 'var(--color-success)';
-  setTimeout(function() {
+  setTimeout(function() {{
     btn.textContent = orig;
     btn.style.background = '';
     btn.style.color = '';
     btn.style.borderColor = '';
-  }, duration || 2000);
-}
-function copyPrompt() {
+  }}, duration || 2000);
+}}
+function copyPrompt() {{
   var el = document.getElementById('fullPrompt');
   if (!el) return;
-  _copyText(el.textContent).then(function() {
-    _flashBtn(document.getElementById('copyBtn'), 'Copied!');
-  });
-}
-function savePromptToFile() {
+  _copyText(el.textContent).then(function() {{
+    _flashBtn(document.getElementById('copyBtn'), '{js_copied}');
+  }});
+}}
+function savePromptToFile() {{
   var el = document.getElementById('fullPrompt');
   if (!el) return;
-  var blob = new Blob([el.textContent], { type: 'text/plain' });
+  var blob = new Blob([el.textContent], {{ type: 'text/plain' }});
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
   a.href = url; a.download = 'investigation_prompt.txt';
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
-}
-function togglePrompt() {
+}}
+function togglePrompt() {{
   var f = document.getElementById('fullPrompt');
   var b = document.getElementById('togglePromptBtn');
   if (!f || !b) return;
   f.classList.toggle('show'); b.classList.toggle('active');
-  b.textContent = f.classList.contains('show') ? 'Hide Full Prompt' : 'Show Full Prompt';
-}
-function toggleTableRows(id, btn) {
+  b.textContent = f.classList.contains('show') ? '{js_hide_prompt}' : '{js_show_prompt}';
+}}
+function toggleTableRows(id, btn) {{
   var el = document.getElementById(id);
   if (!el || !btn) return;
   el.classList.toggle('show');
   btn.classList.toggle('active');
-  if (el.classList.contains('show')) {
-    btn.textContent = 'Collapse';
-  } else {
-    btn.textContent = btn.getAttribute('data-label') || 'Show all';
-  }
-}
-function copyCommand(btn, cmd) {
+  if (el.classList.contains('show')) {{
+    btn.textContent = '{js_collapse}';
+  }} else {{
+    btn.textContent = btn.getAttribute('data-label') || '{js_show_all}';
+  }}
+}}
+function copyCommand(btn, cmd) {{
   var text = cmd.replace(/&quot;/g, '"');
-  _copyText(text).then(function() { _flashBtn(btn, 'Copied!'); });
-}
-function toggleAcceptMenu(idx) {
+  _copyText(text).then(function() {{ _flashBtn(btn, '{js_copied}'); }});
+}}
+function toggleAcceptMenu(idx) {{
   var menu = document.getElementById('accept-menu-' + idx);
   if (!menu) return;
-  document.querySelectorAll('.accept-menu.show').forEach(function(m) {
+  document.querySelectorAll('.accept-menu.show').forEach(function(m) {{
     if (m !== menu) m.classList.remove('show');
-  });
+  }});
   menu.classList.toggle('show');
-}
-function _markAccepted(idx) {
+}}
+function _markAccepted(idx) {{
   var menu = document.getElementById('accept-menu-' + idx);
   if (menu) menu.classList.remove('show');
   var actions = document.getElementById('actions-' + idx);
-  if (actions) {
+  if (actions) {{
     var btn = actions.querySelector('.btn-accept');
-    if (btn) {
-      btn.textContent = 'Accepted \u2713';
+    if (btn) {{
+      btn.textContent = '{js_accepted}';
       btn.classList.add('accepted');
-    }
-  }
+    }}
+  }}
   updateProgress();
-}
-function _showToast(msg) {
+}}
+function _showToast(msg) {{
   var existing = document.getElementById('report-toast');
   if (existing) existing.remove();
   var t = document.createElement('div');
@@ -2651,100 +2663,100 @@ function _showToast(msg) {
   t.style.cssText = 'position:fixed;bottom:2em;right:2em;background:#0A4D4A;color:white;padding:0.75em 1.5em;border-radius:8px;font-weight:500;z-index:1000;opacity:0;transition:opacity 0.3s;';
   t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(function() { t.style.opacity = '1'; }, 10);
-  setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 300); }, 2500);
-}
-function acceptFinding(idx, scope, cmd) {
+  setTimeout(function() {{ t.style.opacity = '1'; }}, 10);
+  setTimeout(function() {{ t.style.opacity = '0'; setTimeout(function() {{ t.remove(); }}, 300); }}, 2500);
+}}
+function acceptFinding(idx, scope, cmd) {{
   var changeIndex = idx + 1;
-  fetch('/api/accept', {
+  fetch('/api/accept', {{
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({index: changeIndex, scope: scope, reason: 'Expected behavior'})
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) { _markAccepted(idx); _showToast('Accepted'); })
-  .catch(function() {
+    headers: {{'Content-Type': 'application/json'}},
+    body: JSON.stringify({{index: changeIndex, scope: scope, reason: 'Expected behavior'}})
+  }})
+  .then(function(r) {{ return r.json(); }})
+  .then(function(data) {{ _markAccepted(idx); _showToast('{js_accepted_toast}'); }})
+  .catch(function() {{
     var text = cmd.replace(/&quot;/g, '"');
-    _copyText(text).then(function() {
+    _copyText(text).then(function() {{
       _markAccepted(idx);
-      _showToast('Command copied \u2014 paste in terminal to accept');
-    });
-  });
-}
-function updateProgress() {
+      _showToast('{js_cmd_copied}');
+    }});
+  }});
+}}
+function updateProgress() {{
   var total = document.querySelectorAll('.btn-accept').length;
   var resolved = document.querySelectorAll('.btn-accept.accepted').length;
   var counter = document.getElementById('resolvedCount');
   var fill = document.getElementById('progressFill');
   if (counter) counter.textContent = resolved;
   if (fill) fill.style.width = (total > 0 ? (resolved / total * 100) : 0) + '%';
-}
-function toggleFixPrompt(idx) {
+}}
+function toggleFixPrompt(idx) {{
   var panel = document.getElementById('fix-prompt-' + idx);
   if (panel) panel.classList.toggle('show');
-}
-function copyFixPrompt(idx) {
+}}
+function copyFixPrompt(idx) {{
   var el = document.getElementById('fix-prompt-text-' + idx);
   if (!el) return;
   var text = el.textContent.replace(/\\\\n/g, '\\n');
-  _copyText(text).then(function() {
+  _copyText(text).then(function() {{
     var btn = el.parentElement.querySelector('.btn-copy-sm');
-    if (btn) {
-      btn.textContent = 'Copied!';
-      setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
-    }
-  });
-}
-function filterChanges(level, btn) {
+    if (btn) {{
+      btn.textContent = '{js_copied}';
+      setTimeout(function() {{ btn.textContent = '{js_copy}'; }}, 2000);
+    }}
+  }});
+}}
+function filterChanges(level, btn) {{
   var cards = document.querySelectorAll('.change-card');
   var buttons = document.querySelectorAll('.btn-filter');
-  for (var i = 0; i < buttons.length; i++) {
+  for (var i = 0; i < buttons.length; i++) {{
     buttons[i].classList.remove('active');
-  }
+  }}
   btn.classList.add('active');
-  for (var j = 0; j < cards.length; j++) {
-    if (level === 'all') {
+  for (var j = 0; j < cards.length; j++) {{
+    if (level === 'all') {{
       cards[j].classList.remove('filter-hidden');
-    } else {
-      if (cards[j].classList.contains(level)) {
+    }} else {{
+      if (cards[j].classList.contains(level)) {{
         cards[j].classList.remove('filter-hidden');
-      } else {
+      }} else {{
         cards[j].classList.add('filter-hidden');
-      }
-    }
-  }
-}
-document.addEventListener('DOMContentLoaded', function() {
+      }}
+    }}
+  }}
+}}
+document.addEventListener('DOMContentLoaded', function() {{
   var btns = document.querySelectorAll('button[onclick^="toggleTableRows"]');
-  for (var i = 0; i < btns.length; i++) {
+  for (var i = 0; i < btns.length; i++) {{
     btns[i].setAttribute('data-label', btns[i].textContent);
-  }
+  }}
   // Close accept menus when clicking outside
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.accept-group')) {
-      document.querySelectorAll('.accept-menu.show').forEach(function(m) {
+  document.addEventListener('click', function(e) {{
+    if (!e.target.closest('.accept-group')) {{
+      document.querySelectorAll('.accept-menu.show').forEach(function(m) {{
         m.classList.remove('show');
-      });
-    }
-  });
+      }});
+    }}
+  }});
   // Mark already-accepted items on page load (server mode only, silent fail on file://)
   fetch('/api/accepted')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
+    .then(function(r) {{ return r.json(); }})
+    .then(function(data) {{
       var accepted = data.accepted || [];
       var cards = document.querySelectorAll('.change-card');
-      cards.forEach(function(card, idx) {
+      cards.forEach(function(card, idx) {{
         var id = card.id || '';
-        for (var i = 0; i < accepted.length; i++) {
+        for (var i = 0; i < accepted.length; i++) {{
           var key = accepted[i].key || '';
           var parts = key.split(':');
-          if (parts.length === 2 && id === 'change-' + parts[0] + '-' + parts[1]) {
+          if (parts.length === 2 && id === 'change-' + parts[0] + '-' + parts[1]) {{
             _markAccepted(idx);
             break;
-          }
-        }
-      });
-    })
-    .catch(function() { /* file:// mode — ignore */ });
-});
+          }}
+        }}
+      }});
+    }})
+    .catch(function() {{ /* file:// mode — ignore */ }});
+}});
 </script>"""

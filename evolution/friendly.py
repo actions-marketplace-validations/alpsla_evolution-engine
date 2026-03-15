@@ -182,6 +182,11 @@ def metric_insight(metric: str, direction: str) -> str:
     Returns:
         Human-readable insight string, or empty string if unknown.
     """
+    from evolution.i18n import t
+    key = f"insights.{metric}_{direction}"
+    val = t(key)
+    if val != key:
+        return val
     return _METRIC_INSIGHTS.get((metric, direction), "")
 
 
@@ -397,7 +402,7 @@ _PATTERN_RISK = {
     ),
 }
 
-# Severity display properties
+# Severity display properties (English fallbacks; labels are overridden by i18n at render time)
 _SEVERITY_DISPLAY = {
     "critical": {"label": "Action Required", "color": "#dc2626", "icon": "\u26a0\ufe0f"},
     "concern": {"label": "Needs Attention", "color": "#ea580c", "icon": "\U0001f50d"},
@@ -405,6 +410,39 @@ _SEVERITY_DISPLAY = {
     "info": {"label": "Informational", "color": "#0284c7", "icon": "\u2139\ufe0f"},
     "positive": {"label": "Healthy Pattern", "color": "#16a34a", "icon": "\u2705"},
 }
+
+# Map severity keys to i18n severity keys
+_SEVERITY_I18N = {
+    "critical": "severity.action_required",
+    "concern": "severity.needs_attention",
+    "watch": "severity.worth_monitoring",
+    "info": "severity.informational",
+    "positive": "severity.healthy",
+}
+
+
+def severity_display(severity: str) -> dict:
+    """Get severity display properties with translated label."""
+    from evolution.i18n import t
+    base = _SEVERITY_DISPLAY.get(severity, _SEVERITY_DISPLAY["info"]).copy()
+    i18n_key = _SEVERITY_I18N.get(severity)
+    if i18n_key:
+        translated = t(i18n_key)
+        if translated != i18n_key:
+            base["label"] = translated
+    return base
+
+
+def _i18n_pattern_risk(metric: str, direction: str):
+    """Try to get translated impact/recommendation for a metric+direction."""
+    from evolution.i18n import t
+    impact_key = f"pattern_risk.{metric}_{direction}_impact"
+    rec_key = f"pattern_risk.{metric}_{direction}_rec"
+    impact_val = t(impact_key)
+    rec_val = t(rec_key)
+    if impact_val != impact_key and rec_val != rec_key:
+        return impact_val, rec_val
+    return None, None
 
 
 def pattern_risk_assessment(pattern: dict, change_direction: str | None = None) -> dict:
@@ -422,11 +460,14 @@ def pattern_risk_assessment(pattern: dict, change_direction: str | None = None) 
         Dict with severity, severity_display, impact, recommendation.
         severity is one of: critical, concern, watch, info, positive.
     """
+    from evolution.i18n import t
+
     metrics = pattern.get("metrics") or []
     corr = pattern.get("correlation") or pattern.get("correlation_strength") or 0
 
     # Try each metric in the pattern to find a risk mapping
     best = None
+    best_metric_dir = None
     for m in metrics:
         # Skip presence metrics (they indicate triggers, not outcomes)
         if m.endswith("_presence"):
@@ -438,22 +479,43 @@ def pattern_risk_assessment(pattern: dict, change_direction: str | None = None) 
             # Pick the highest severity
             if best is None or _severity_rank(candidate[0]) > _severity_rank(best[0]):
                 best = candidate
+                best_metric_dir = (m, direction)
 
     if best is None:
         # Fallback: assess by correlation strength
         abs_corr = abs(corr)
         if abs_corr >= 0.7:
             severity = "watch"
-            impact = "A strong statistical correlation exists between these signals. Changes in one area predictably affect the other."
-            recommendation = "Monitor this relationship. If one signal degrades, check the correlated area."
+            fb_key = "fallback_strong"
         elif abs_corr >= 0.3:
             severity = "info"
-            impact = "A moderate correlation exists between these signals, suggesting they tend to move together."
-            recommendation = "Be aware of this relationship when making changes in either area."
+            fb_key = "fallback_moderate"
         else:
             severity = "info"
-            impact = "A weak but recurring correlation exists between these signals."
-            recommendation = "No action needed. This is a background trend to be aware of."
+            fb_key = "fallback_weak"
+
+        impact_i18n = t(f"pattern_risk.{fb_key}_impact")
+        rec_i18n = t(f"pattern_risk.{fb_key}_rec")
+        if impact_i18n == f"pattern_risk.{fb_key}_impact":
+            # Fallback to English defaults
+            _fb = {
+                "fallback_strong": (
+                    "A strong statistical correlation exists between these signals. Changes in one area predictably affect the other.",
+                    "Monitor this relationship. If one signal degrades, check the correlated area.",
+                ),
+                "fallback_moderate": (
+                    "A moderate correlation exists between these signals, suggesting they tend to move together.",
+                    "Be aware of this relationship when making changes in either area.",
+                ),
+                "fallback_weak": (
+                    "A weak but recurring correlation exists between these signals.",
+                    "No action needed. This is a background trend to be aware of.",
+                ),
+            }
+            impact, recommendation = _fb[fb_key]
+        else:
+            impact = impact_i18n
+            recommendation = rec_i18n
 
         # Honour compound escalation if applied by escalate_compound_patterns()
         if "_escalated_severity" in pattern:
@@ -464,12 +526,19 @@ def pattern_risk_assessment(pattern: dict, change_direction: str | None = None) 
 
         return {
             "severity": severity,
-            "severity_display": _SEVERITY_DISPLAY[severity],
+            "severity_display": severity_display(severity),
             "impact": impact,
             "recommendation": recommendation,
         }
 
     severity, impact, recommendation = best
+
+    # Try i18n override for impact/recommendation
+    if best_metric_dir:
+        i18n_impact, i18n_rec = _i18n_pattern_risk(*best_metric_dir)
+        if i18n_impact is not None:
+            impact = i18n_impact
+            recommendation = i18n_rec
 
     # Honour compound escalation if applied by escalate_compound_patterns()
     if "_escalated_severity" in pattern:
@@ -480,7 +549,7 @@ def pattern_risk_assessment(pattern: dict, change_direction: str | None = None) 
 
     return {
         "severity": severity,
-        "severity_display": _SEVERITY_DISPLAY[severity],
+        "severity_display": severity_display(severity),
         "impact": impact,
         "recommendation": recommendation,
     }

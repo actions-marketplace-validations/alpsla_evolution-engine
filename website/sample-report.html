@@ -783,11 +783,11 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
   <div class="commit-attribution">Trigger: <a href="https://github.com/demo-org/demo-repo/commit/e4f49b1a3c2d5e6f7a8b9c0d1e2f3a4b5c6d7e8f" target="_blank" class="commit-link"><code>e4f49b1a</code></a> feat: migrate authentication to OAuth2 + add rate limiting</div>
   <div class="inline-patterns">
     <div class="inline-patterns-header">Supporting Evidence</div>
-    <div class="inline-pattern severity-border-info">
-  <span class="severity-badge severity-info">ℹ️ Informational</span>
+    <div class="inline-pattern severity-border-watch">
+  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
   <p class="inline-pattern-desc">When code changes are scattered across many directories, releases tend to be pushed out faster — possibly to ship hotfixes before the next planned release.</p>
-  <div class="pattern-impact"><strong>What this means:</strong> Releases are happening more frequently. Faster releases reduce batch size risk but may skip review steps.</div>
-  <div class="pattern-recommendation"><strong>Recommendation:</strong> Verify that quality gates (testing, review) are still being applied to faster releases.</div>
+  <div class="pattern-impact"><strong>What this means:</strong> Changes are spreading across unrelated parts of the codebase. This makes reviews harder and increases the chance of unexpected side effects.</div>
+  <div class="pattern-recommendation"><strong>Recommendation:</strong> Review recent PRs for scope creep. Consider breaking large changes into focused commits.</div>
 </div>
   </div>
   <div class="change-actions no-print" id="actions-1">
@@ -863,15 +863,15 @@ Prefetch relat (3 files)\n  608ead0b — chore: upgrade React to v19, update bun
 </div>
 <div class="inline-pattern severity-border-watch">
   <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
+  <p class="inline-pattern-desc">When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.</p>
+  <div class="pattern-impact"><strong>What this means:</strong> Builds are taking longer. Slower CI feedback loops reduce developer productivity and delay catching issues.</div>
+  <div class="pattern-recommendation"><strong>Recommendation:</strong> Profile the build pipeline to identify bottlenecks. Check for newly added expensive tests or build steps.</div>
+</div>
+<div class="inline-pattern severity-border-watch">
+  <span class="severity-badge severity-watch">👁️ Worth Monitoring</span>
   <p class="inline-pattern-desc">Adding dependencies increases CI build time as package installation and resolution steps take longer.</p>
   <div class="pattern-impact"><strong>What this means:</strong> The dependency count is growing, expanding the supply-chain attack surface and potential for version conflicts.</div>
   <div class="pattern-recommendation"><strong>Recommendation:</strong> Audit new dependencies for necessity, maintenance status, and known vulnerabilities.</div>
-</div>
-<div class="inline-pattern severity-border-info">
-  <span class="severity-badge severity-info">ℹ️ Informational</span>
-  <p class="inline-pattern-desc">When CI pipelines run longer, the time between releases shortens — teams may be rushing releases to meet deadlines despite slower builds.</p>
-  <div class="pattern-impact"><strong>What this means:</strong> Builds are running faster than usual. Verify this isn&#x27;t due to skipped tests or simplified steps.</div>
-  <div class="pattern-recommendation"><strong>Recommendation:</strong> Confirm test coverage hasn&#x27;t decreased alongside faster builds.</div>
 </div>
   </div>
   <div class="change-actions no-print" id="actions-2">
