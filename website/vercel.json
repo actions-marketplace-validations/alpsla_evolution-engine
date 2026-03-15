@@ -107,6 +107,9 @@
     { "src": "/sample-report-verify-de.html", "dest": "/sample-report-verify-de.html" },
     { "src": "/sample-report-verify-es.html", "dest": "/sample-report-verify-es.html" },
     { "src": "/reports/aws-cdk", "dest": "/report-aws-cdk.html" },
+    { "src": "/reports/workers-sdk", "dest": "/report-workers-sdk.html" },
+    { "src": "/reports/google-cloud-python", "dest": "/report-google-cloud-python.html" },
+    { "src": "/reports/vscode", "dest": "/report-vscode.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
